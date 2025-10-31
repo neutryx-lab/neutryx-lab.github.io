@@ -5,35 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Neutryx‑Core — Open‑Source</title>
   <style>
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#f9f9fb;}
-    header{background:#fff;padding:32px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);text-align:center;}
-    main{max-width:860px;margin:0 auto;padding:28px 16px 56px;}
-    h1{margin:.2rem 0 .4rem;font-size:2rem}
-    p{color:#444;line-height:1.7}
-    .btn{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #d9d9e3;text-decoration:none;color:#0a66c2}
-    ul{line-height:1.8;color:#333}
-    .note{background:#fff;border-left:4px solid #0a66c2;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  </style>
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#f9f9fb;}
+  header{position:sticky; top:0; z-index:50; background:#fff;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+  .wrap{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;}
+  .brand img{width:36px;height:36px;object-fit:contain;}
+  .brand span{font-weight:700;letter-spacing:.2px;}
+  nav{margin-left:auto;display:flex;gap:14px;}
+  nav a{color:#0a66c2;text-decoration:none;}
+  nav a:hover{text-decoration:underline;}
+  main{max-width:980px;margin:0 auto;padding:24px 16px 56px;}
+  h1{margin:.2rem 0 .4rem;font-size:2rem}
+  p{color:#444;line-height:1.7}
+  .btn{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #d9d9e3;text-decoration:none;color:#0a66c2}
+  .box{background:#fff;border-left:4px solid #f5b100;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .note{background:#fff;border-left:4px solid #0a66c2;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  footer{text-align:center;color:#777;padding:28px 16px 44px;}
+</style>
 </head>
 <body>
   <header>
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="Back to Home">
+        <img src="assets/logo.png" alt="Neutryx logo">
+        <span>Neutryx Lab</span>
+      </a>
+      <nav>
+        <a href="core.html">Neutryx‑Core</a>
+        <a href="ai.html">Neutryx‑AI</a>
+        <a href="https://github.com/neutryx-lab">GitHub</a>
+        <a href="mailto:contact@neutryx.tech">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
     <h1>Neutryx‑Core (Open‑Source)</h1>
     <p>High‑performance numerical engine for pricing and risk, built on JAX and automatic differentiation.</p>
-    <p><a class="btn" href="https://github.com/neutryx-lab/neutryx-core">GitHub Repository →</a>
-       <a class="btn" href="https://github.com/neutryx-lab">Organization →</a></p>
-  </header>
-  <main>
-    <section>
-      <h2>Scope</h2>
-      <ul>
-        <li>Deterministic/pricing‑PDE solvers and utilities (no ML logic).</li>
-        <li>Automatic differentiation (AAD), sensitivities, and basic XVA components.</li>
-        <li>Clean extension points for products/markets without exposing proprietary models.</li>
-      </ul>
-    </section>
+    <p>
+      <a class="btn" href="https://github.com/neutryx-lab/neutryx-core">GitHub Repository →</a>
+      <a class="btn" href="https://github.com/neutryx-lab">Organization →</a>
+    </p>
     <section class="note">
       <strong>License:</strong> Permissive open‑source (e.g., MIT/BSD). No confidential learning logic is included here.
     </section>
   </main>
+
+  <footer>© 2025 Neutryx Lab · University College London</footer>
 </body>
 </html>
