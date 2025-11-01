@@ -1283,100 +1283,50 @@
       try{
         const url = `${base}/${endpoint}`;
 
-        // Create four requests: Baseline, JAX(noJIT), JAX(JIT), JAX(JIT+AAD)
-        const request1 = {...baseRequestBody, engine: {use_jax: false, use_jit: false, use_aad: false}};
-        const request2 = {...baseRequestBody, engine: {use_jax: true, use_jit: false, use_aad: false}};
-        const request3 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: false}};
-        const request4 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: true}};
+        // Send single request without engine config - API will run all engine configurations
+        reqbox.textContent = JSON.stringify(baseRequestBody, null, 2);
 
-        reqbox.textContent = JSON.stringify({
-          'Baseline': request1,
-          'JAX (noJIT)': request2,
-          'JAX (JIT)': request3,
-          'JAX (JIT+AAD)': request4
-        }, null, 2);
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(baseRequestBody)
+        });
 
-        // Run all four requests in parallel
-        const [res1, res2, res3, res4] = await Promise.all([
-          fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(request1)
-          }),
-          fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(request2)
-          }),
-          fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(request3)
-          }),
-          fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(request4)
-          })
-        ]);
-
-        const [txt1, txt2, txt3, txt4] = await Promise.all([res1.text(), res2.text(), res3.text(), res4.text()]);
+        const txt = await res.text();
 
         try{
-          const raw1 = JSON.parse(txt1);
-          const raw2 = JSON.parse(txt2);
-          const raw3 = JSON.parse(txt3);
-          const raw4 = JSON.parse(txt4);
+          const raw = JSON.parse(txt);
 
-          // Extract the actual results from the response structure
-          // API returns: {baseline: {...}, jax_nojit: null, ...}
-          // We need to extract the non-null result based on engine config
-          const extractResult = (raw, engineConfig) => {
-            let result = null;
-            if (!engineConfig.use_jax) {
-              result = raw.baseline;
-            } else if (!engineConfig.use_jit) {
-              result = raw.jax_nojit || raw.baseline;
-            } else if (!engineConfig.use_aad) {
-              result = raw.jax_jit || raw.baseline;
-            } else {
-              result = raw.jax_jit || raw.baseline; // JIT+AAD uses jax_jit
+          // Extract results from API response
+          // API returns: {baseline: {...}, jax_nojit: {...}, jax_jit: {...}, ...}
+          const extractResult = (data) => {
+            if (data && data.time_sec !== undefined) {
+              data.latency_ms = data.time_sec * 1000;
             }
-
-            // Convert time_sec to latency_ms
-            if (result && result.time_sec !== undefined) {
-              result.latency_ms = result.time_sec * 1000;
-            }
-
-            return result;
+            return data;
           };
 
-          const data1 = extractResult(raw1, {use_jax: false, use_jit: false, use_aad: false});
-          const data2 = extractResult(raw2, {use_jax: true, use_jit: false, use_aad: false});
-          const data3 = extractResult(raw3, {use_jax: true, use_jit: true, use_aad: false});
-          const data4 = extractResult(raw4, {use_jax: true, use_jit: true, use_aad: true});
+          const data1 = extractResult(raw.baseline);
+          const data2 = extractResult(raw.jax_nojit);
+          const data3 = extractResult(raw.jax_jit);
+          const data4 = extractResult(raw.jax_jit_aad || raw.jax_jit); // Fallback to jax_jit if jax_jit_aad doesn't exist
 
-          const results = [data1, data2, data3, data4];
+          const results = [data1, data2, data3, data4].filter(r => r != null);
 
-          out.textContent = JSON.stringify({
-            'Baseline': raw1,
-            'JAX (noJIT)': raw2,
-            'JAX (JIT)': raw3,
-            'JAX (JIT+AAD)': raw4
-          }, null, 2);
+          out.textContent = JSON.stringify(raw, null, 2);
           out.parentElement.classList.add('fade-in');
 
-          if(res1.ok && res2.ok && res3.ok && res4.ok){
+          if(res.ok){
             // Display parsed comparison results as array
             displayParsedResults(results);
             setStatus('ok', 'success');
           } else {
-            setStatus('err', `HTTP error`);
+            setStatus('err', `HTTP ${res.status} error`);
             displayParsedResults(null);
           }
         }
         catch{
-          out.textContent = `Baseline:\n${txt1}\n\nJAX (noJIT):\n${txt2}\n\nJAX (JIT):\n${txt3}\n\nJAX (JIT+AAD):\n${txt4}`;
+          out.textContent = txt;
           setStatus('err', 'Parse error');
           displayParsedResults(null);
         }
