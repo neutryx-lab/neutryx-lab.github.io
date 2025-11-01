@@ -98,6 +98,26 @@
       .tabs{overflow-x:auto;flex-wrap:nowrap}
       .tab{white-space:nowrap;font-size:.9rem;padding:8px 12px}
     }
+    /* Section headers */
+    .section-header{font-size:.95rem;font-weight:600;color:var(--brand);margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+    /* Two-column layout for PV/Risk */
+    .two-col-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media (max-width:900px){
+      .two-col-layout{grid-template-columns:1fr}
+    }
+    .col-section{background:rgba(10,102,194,.02);padding:14px;border-radius:12px;border:1px solid rgba(10,102,194,.1)}
+    /* Three-column layout for XVA */
+    .three-col-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    @media (max-width:1200px){
+      .three-col-layout{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:768px){
+      .three-col-layout{grid-template-columns:1fr}
+    }
+    /* Percentage input styling */
+    .pct-input{position:relative}
+    .pct-input input{padding-right:30px}
+    .pct-symbol{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
   </style>
 </head>
 <body>
@@ -164,240 +184,312 @@
 
           <!-- PV Tab Content (Swap Price) -->
           <div class="tab-content active" id="pv-content">
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-pv-notional">
-                <label for="pv-notional">Notional</label>
-                <input id="pv-notional" type="number" value="10000000" step="1000" />
-                <div class="error-msg"></div>
+            <div class="two-col-layout">
+              <!-- Left column: Swap Details -->
+              <div class="col-section">
+                <div class="section-header">Swap Details</div>
+                <div class="field" id="field-pv-type" style="margin-bottom:12px">
+                  <label for="pv-type">Type</label>
+                  <select id="pv-type">
+                    <option value="true">Pay Fixed</option>
+                    <option value="false">Receive Fixed</option>
+                  </select>
+                </div>
+                <div class="field" id="field-pv-notional" style="margin-bottom:12px">
+                  <label for="pv-notional">Notional (USD)</label>
+                  <input id="pv-notional" type="text" value="10,000,000" />
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field pct-input" id="field-pv-fixed-rate" style="margin-bottom:12px">
+                  <label for="pv-fixed-rate">Fixed Rate</label>
+                  <input id="pv-fixed-rate" type="number" value="2.4" step="0.1" />
+                  <span class="pct-symbol">%</span>
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field" id="field-pv-pay-freq" style="margin-bottom:12px">
+                  <label for="pv-pay-freq">Pay Freq (months)</label>
+                  <select id="pv-pay-freq">
+                    <option value="6">6 (Semi-annual)</option>
+                    <option value="12">12 (Annual)</option>
+                    <option value="3">3 (Quarterly)</option>
+                  </select>
+                </div>
+                <div class="field" id="field-pv-maturity" style="margin-bottom:12px">
+                  <label for="pv-maturity">Maturity (years)</label>
+                  <input id="pv-maturity" type="number" value="5" step="0.5" min="0.5" />
+                  <div class="error-msg"></div>
+                </div>
               </div>
-              <div class="field" id="field-pv-fixed-rate">
-                <label for="pv-fixed-rate">Fixed Rate</label>
-                <input id="pv-fixed-rate" type="number" value="0.024" step="0.001" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-pv-maturity">
-                <label for="pv-maturity">Maturity (years)</label>
-                <input id="pv-maturity" type="number" value="5" step="0.5" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-pv-pay-freq">
-                <label for="pv-pay-freq">Pay Freq (months)</label>
-                <select id="pv-pay-freq">
-                  <option value="6">6 (Semi-annual)</option>
-                  <option value="12">12 (Annual)</option>
-                  <option value="3">3 (Quarterly)</option>
-                </select>
-              </div>
-              <div class="field" id="field-pv-pay-fixed">
-                <label for="pv-pay-fixed">Pay Fixed</label>
-                <select id="pv-pay-fixed">
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-            </div>
-            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates, cont. compounding):</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-pv-curve-1m">
-                <label for="pv-curve-1m">1M</label>
-                <input id="pv-curve-1m" type="number" value="0.005" step="0.001" />
-              </div>
-              <div class="field" id="field-pv-curve-3m">
-                <label for="pv-curve-3m">3M</label>
-                <input id="pv-curve-3m" type="number" value="0.007" step="0.001" />
-              </div>
-              <div class="field" id="field-pv-curve-6m">
-                <label for="pv-curve-6m">6M</label>
-                <input id="pv-curve-6m" type="number" value="0.009" step="0.001" />
-              </div>
-              <div class="field" id="field-pv-curve-1y">
-                <label for="pv-curve-1y">1Y</label>
-                <input id="pv-curve-1y" type="number" value="0.011" step="0.001" />
-              </div>
-              <div class="field" id="field-pv-curve-2y">
-                <label for="pv-curve-2y">2Y</label>
-                <input id="pv-curve-2y" type="number" value="0.015" step="0.001" />
-              </div>
-              <div class="field" id="field-pv-curve-5y">
-                <label for="pv-curve-5y">5Y</label>
-                <input id="pv-curve-5y" type="number" value="0.022" step="0.001" />
+
+              <!-- Right column: Zero Rate Curve -->
+              <div class="col-section">
+                <div class="section-header">Zero Rate Curve</div>
+                <div class="row" style="grid-template-columns:repeat(3,1fr)">
+                  <div class="field pct-input" id="field-pv-curve-1m" style="margin-bottom:12px">
+                    <label for="pv-curve-1m">1M</label>
+                    <input id="pv-curve-1m" type="number" value="0.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-pv-curve-3m" style="margin-bottom:12px">
+                    <label for="pv-curve-3m">3M</label>
+                    <input id="pv-curve-3m" type="number" value="0.7" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-pv-curve-6m" style="margin-bottom:12px">
+                    <label for="pv-curve-6m">6M</label>
+                    <input id="pv-curve-6m" type="number" value="0.9" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-pv-curve-1y" style="margin-bottom:12px">
+                    <label for="pv-curve-1y">1Y</label>
+                    <input id="pv-curve-1y" type="number" value="1.1" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-pv-curve-2y" style="margin-bottom:12px">
+                    <label for="pv-curve-2y">2Y</label>
+                    <input id="pv-curve-2y" type="number" value="1.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-pv-curve-5y" style="margin-bottom:12px">
+                    <label for="pv-curve-5y">5Y</label>
+                    <input id="pv-curve-5y" type="number" value="2.2" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Risk Tab Content (Swap Risks) -->
           <div class="tab-content" id="risk-content">
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-risk-notional">
-                <label for="risk-notional">Notional</label>
-                <input id="risk-notional" type="number" value="10000000" step="1000" />
-                <div class="error-msg"></div>
+            <div class="two-col-layout">
+              <!-- Left column: Swap Details -->
+              <div class="col-section">
+                <div class="section-header">Swap Details</div>
+                <div class="field" id="field-risk-type" style="margin-bottom:12px">
+                  <label for="risk-type">Type</label>
+                  <select id="risk-type">
+                    <option value="true">Pay Fixed</option>
+                    <option value="false">Receive Fixed</option>
+                  </select>
+                </div>
+                <div class="field" id="field-risk-notional" style="margin-bottom:12px">
+                  <label for="risk-notional">Notional (USD)</label>
+                  <input id="risk-notional" type="text" value="10,000,000" />
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field pct-input" id="field-risk-fixed-rate" style="margin-bottom:12px">
+                  <label for="risk-fixed-rate">Fixed Rate</label>
+                  <input id="risk-fixed-rate" type="number" value="2.4" step="0.1" />
+                  <span class="pct-symbol">%</span>
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field" id="field-risk-pay-freq" style="margin-bottom:12px">
+                  <label for="risk-pay-freq">Pay Freq (months)</label>
+                  <select id="risk-pay-freq">
+                    <option value="6">6 (Semi-annual)</option>
+                    <option value="12">12 (Annual)</option>
+                    <option value="3">3 (Quarterly)</option>
+                  </select>
+                </div>
+                <div class="field" id="field-risk-maturity" style="margin-bottom:12px">
+                  <label for="risk-maturity">Maturity (years)</label>
+                  <input id="risk-maturity" type="number" value="5" step="0.5" min="0.5" />
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field" id="field-risk-bump-bp" style="margin-bottom:12px">
+                  <label for="risk-bump-bp">Bump (bps)</label>
+                  <input id="risk-bump-bp" type="number" value="1.0" step="0.1" />
+                  <div class="error-msg"></div>
+                </div>
               </div>
-              <div class="field" id="field-risk-fixed-rate">
-                <label for="risk-fixed-rate">Fixed Rate</label>
-                <input id="risk-fixed-rate" type="number" value="0.024" step="0.001" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-risk-maturity">
-                <label for="risk-maturity">Maturity (years)</label>
-                <input id="risk-maturity" type="number" value="5" step="0.5" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-risk-pay-freq">
-                <label for="risk-pay-freq">Pay Freq (months)</label>
-                <select id="risk-pay-freq">
-                  <option value="6">6 (Semi-annual)</option>
-                  <option value="12">12 (Annual)</option>
-                  <option value="3">3 (Quarterly)</option>
-                </select>
-              </div>
-              <div class="field" id="field-risk-pay-fixed">
-                <label for="risk-pay-fixed">Pay Fixed</label>
-                <select id="risk-pay-fixed">
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-              <div class="field" id="field-risk-bump-bp">
-                <label for="risk-bump-bp">Bump (bps)</label>
-                <input id="risk-bump-bp" type="number" value="1.0" step="0.1" />
-                <div class="error-msg"></div>
-              </div>
-            </div>
-            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates, cont. compounding):</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-risk-curve-1m">
-                <label for="risk-curve-1m">1M</label>
-                <input id="risk-curve-1m" type="number" value="0.005" step="0.001" />
-              </div>
-              <div class="field" id="field-risk-curve-3m">
-                <label for="risk-curve-3m">3M</label>
-                <input id="risk-curve-3m" type="number" value="0.007" step="0.001" />
-              </div>
-              <div class="field" id="field-risk-curve-6m">
-                <label for="risk-curve-6m">6M</label>
-                <input id="risk-curve-6m" type="number" value="0.009" step="0.001" />
-              </div>
-              <div class="field" id="field-risk-curve-1y">
-                <label for="risk-curve-1y">1Y</label>
-                <input id="risk-curve-1y" type="number" value="0.011" step="0.001" />
-              </div>
-              <div class="field" id="field-risk-curve-2y">
-                <label for="risk-curve-2y">2Y</label>
-                <input id="risk-curve-2y" type="number" value="0.015" step="0.001" />
-              </div>
-              <div class="field" id="field-risk-curve-5y">
-                <label for="risk-curve-5y">5Y</label>
-                <input id="risk-curve-5y" type="number" value="0.022" step="0.001" />
+
+              <!-- Right column: Zero Rate Curve -->
+              <div class="col-section">
+                <div class="section-header">Zero Rate Curve</div>
+                <div class="row" style="grid-template-columns:repeat(3,1fr)">
+                  <div class="field pct-input" id="field-risk-curve-1m" style="margin-bottom:12px">
+                    <label for="risk-curve-1m">1M</label>
+                    <input id="risk-curve-1m" type="number" value="0.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-risk-curve-3m" style="margin-bottom:12px">
+                    <label for="risk-curve-3m">3M</label>
+                    <input id="risk-curve-3m" type="number" value="0.7" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-risk-curve-6m" style="margin-bottom:12px">
+                    <label for="risk-curve-6m">6M</label>
+                    <input id="risk-curve-6m" type="number" value="0.9" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-risk-curve-1y" style="margin-bottom:12px">
+                    <label for="risk-curve-1y">1Y</label>
+                    <input id="risk-curve-1y" type="number" value="1.1" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-risk-curve-2y" style="margin-bottom:12px">
+                    <label for="risk-curve-2y">2Y</label>
+                    <input id="risk-curve-2y" type="number" value="1.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" id="field-risk-curve-5y" style="margin-bottom:12px">
+                    <label for="risk-curve-5y">5Y</label>
+                    <input id="risk-curve-5y" type="number" value="2.2" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- XVA Tab Content -->
           <div class="tab-content" id="xva-content">
-            <div class="small mutetext" style="margin-bottom:8px">Swap Parameters:</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-xva-notional">
-                <label for="xva-notional">Notional</label>
-                <input id="xva-notional" type="number" value="10000000" step="1000" />
-                <div class="error-msg"></div>
+            <div class="three-col-layout">
+              <!-- Left column: Swap Details -->
+              <div class="col-section">
+                <div class="section-header">Swap Details</div>
+                <div class="field" id="field-xva-type" style="margin-bottom:12px">
+                  <label for="xva-type">Type</label>
+                  <select id="xva-type">
+                    <option value="true">Pay Fixed</option>
+                    <option value="false">Receive Fixed</option>
+                  </select>
+                </div>
+                <div class="field" id="field-xva-notional" style="margin-bottom:12px">
+                  <label for="xva-notional">Notional (USD)</label>
+                  <input id="xva-notional" type="text" value="10,000,000" />
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field pct-input" id="field-xva-fixed-rate" style="margin-bottom:12px">
+                  <label for="xva-fixed-rate">Fixed Rate</label>
+                  <input id="xva-fixed-rate" type="number" value="2.4" step="0.1" />
+                  <span class="pct-symbol">%</span>
+                  <div class="error-msg"></div>
+                </div>
+                <div class="field" id="field-xva-pay-freq" style="margin-bottom:12px">
+                  <label for="xva-pay-freq">Pay Freq (months)</label>
+                  <select id="xva-pay-freq">
+                    <option value="6">6 (Semi-annual)</option>
+                    <option value="12">12 (Annual)</option>
+                    <option value="3">3 (Quarterly)</option>
+                  </select>
+                </div>
+                <div class="field" id="field-xva-maturity" style="margin-bottom:12px">
+                  <label for="xva-maturity">Maturity (years)</label>
+                  <input id="xva-maturity" type="number" value="6" step="0.5" min="0.5" />
+                  <div class="error-msg"></div>
+                </div>
               </div>
-              <div class="field" id="field-xva-fixed-rate">
-                <label for="xva-fixed-rate">Fixed Rate</label>
-                <input id="xva-fixed-rate" type="number" value="0.024" step="0.001" />
-                <div class="error-msg"></div>
+
+              <!-- Middle column: Curve + XVA Parameters -->
+              <div class="col-section">
+                <div class="section-header">Zero Rate Curve</div>
+                <div class="row" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
+                  <div class="field pct-input" style="margin-bottom:12px">
+                    <label for="xva-curve-1m">1M</label>
+                    <input id="xva-curve-1m" type="number" value="0.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" style="margin-bottom:12px">
+                    <label for="xva-curve-1y">1Y</label>
+                    <input id="xva-curve-1y" type="number" value="1.1" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" style="margin-bottom:12px">
+                    <label for="xva-curve-5y">5Y</label>
+                    <input id="xva-curve-5y" type="number" value="2.2" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                  <div class="field pct-input" style="margin-bottom:12px">
+                    <label for="xva-curve-10y">10Y</label>
+                    <input id="xva-curve-10y" type="number" value="2.6" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
+                </div>
+                <div class="section-header" style="margin-top:8px">XVA Parameters</div>
+                <div class="row" style="grid-template-columns:repeat(2,1fr)">
+                  <div class="field pct-input" id="field-xva-lgd-cp" style="margin-bottom:12px">
+                    <label for="xva-lgd-cp">LGD CP</label>
+                    <input id="xva-lgd-cp" type="number" value="60" step="5" />
+                    <span class="pct-symbol">%</span>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field pct-input" id="field-xva-lgd-own" style="margin-bottom:12px">
+                    <label for="xva-lgd-own">LGD Own</label>
+                    <input id="xva-lgd-own" type="number" value="60" step="5" />
+                    <span class="pct-symbol">%</span>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field pct-input" id="field-xva-funding" style="margin-bottom:12px">
+                    <label for="xva-funding">Funding Spread</label>
+                    <input id="xva-funding" type="number" value="0.2" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field pct-input" id="field-xva-coc" style="margin-bottom:12px">
+                    <label for="xva-coc">Cost of Capital</label>
+                    <input id="xva-coc" type="number" value="10" step="1" />
+                    <span class="pct-symbol">%</span>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field pct-input" id="field-xva-cap-factor" style="margin-bottom:12px">
+                    <label for="xva-cap-factor">Capital Factor</label>
+                    <input id="xva-cap-factor" type="number" value="50" step="5" />
+                    <span class="pct-symbol">%</span>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field" id="field-xva-grid" style="margin-bottom:12px">
+                    <label for="xva-grid">Grid (months)</label>
+                    <input id="xva-grid" type="number" value="1" step="1" min="1" />
+                    <div class="error-msg"></div>
+                  </div>
+                </div>
               </div>
-              <div class="field" id="field-xva-maturity">
-                <label for="xva-maturity">Maturity (years)</label>
-                <input id="xva-maturity" type="number" value="7" step="0.5" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-pay-freq">
-                <label for="xva-pay-freq">Pay Freq (months)</label>
-                <select id="xva-pay-freq">
-                  <option value="6">6 (Semi-annual)</option>
-                  <option value="12">12 (Annual)</option>
-                  <option value="3">3 (Quarterly)</option>
-                </select>
-              </div>
-            </div>
-            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates):</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-xva-curve-1m">
-                <label for="xva-curve-1m">1M</label>
-                <input id="xva-curve-1m" type="number" value="0.005" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-curve-1y">
-                <label for="xva-curve-1y">1Y</label>
-                <input id="xva-curve-1y" type="number" value="0.011" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-curve-5y">
-                <label for="xva-curve-5y">5Y</label>
-                <input id="xva-curve-5y" type="number" value="0.022" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-curve-10y">
-                <label for="xva-curve-10y">10Y</label>
-                <input id="xva-curve-10y" type="number" value="0.026" step="0.001" />
-              </div>
-            </div>
-            <div class="small mutetext" style="margin-bottom:8px">XVA Parameters:</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-xva-lgd-cp">
-                <label for="xva-lgd-cp">LGD CP</label>
-                <input id="xva-lgd-cp" type="number" value="0.6" step="0.05" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-lgd-own">
-                <label for="xva-lgd-own">LGD Own</label>
-                <input id="xva-lgd-own" type="number" value="0.6" step="0.05" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-funding">
-                <label for="xva-funding">Funding Spread</label>
-                <input id="xva-funding" type="number" value="0.002" step="0.001" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-coc">
-                <label for="xva-coc">Cost of Capital</label>
-                <input id="xva-coc" type="number" value="0.1" step="0.01" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-cap-factor">
-                <label for="xva-cap-factor">Capital Factor</label>
-                <input id="xva-cap-factor" type="number" value="0.5" step="0.05" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-xva-grid">
-                <label for="xva-grid">Grid (months)</label>
-                <input id="xva-grid" type="number" value="1" step="1" />
-                <div class="error-msg"></div>
-              </div>
-            </div>
-            <div class="small mutetext" style="margin-bottom:8px">Hazard Curves:</div>
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-xva-haz-cp-1y">
-                <label for="xva-haz-cp-1y">CP 1Y</label>
-                <input id="xva-haz-cp-1y" type="number" value="0.01" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-haz-cp-5y">
-                <label for="xva-haz-cp-5y">CP 5Y</label>
-                <input id="xva-haz-cp-5y" type="number" value="0.012" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-haz-cp-10y">
-                <label for="xva-haz-cp-10y">CP 10Y</label>
-                <input id="xva-haz-cp-10y" type="number" value="0.015" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-haz-own-1y">
-                <label for="xva-haz-own-1y">Own 1Y</label>
-                <input id="xva-haz-own-1y" type="number" value="0.008" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-haz-own-5y">
-                <label for="xva-haz-own-5y">Own 5Y</label>
-                <input id="xva-haz-own-5y" type="number" value="0.010" step="0.001" />
-              </div>
-              <div class="field" id="field-xva-haz-own-10y">
-                <label for="xva-haz-own-10y">Own 10Y</label>
-                <input id="xva-haz-own-10y" type="number" value="0.012" step="0.001" />
+
+              <!-- Right column: Hazard Curves -->
+              <div class="col-section">
+                <div class="section-header">Hazard Curves</div>
+                <div style="margin-bottom:14px">
+                  <div class="small mutetext" style="margin-bottom:8px">Counterparty:</div>
+                  <div class="row" style="grid-template-columns:repeat(3,1fr)">
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-cp-1y">1Y</label>
+                      <input id="xva-haz-cp-1y" type="number" value="1.0" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-cp-5y">5Y</label>
+                      <input id="xva-haz-cp-5y" type="number" value="1.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-cp-10y">10Y</label>
+                      <input id="xva-haz-cp-10y" type="number" value="1.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="small mutetext" style="margin-bottom:8px">Own:</div>
+                  <div class="row" style="grid-template-columns:repeat(3,1fr)">
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-own-1y">1Y</label>
+                      <input id="xva-haz-own-1y" type="number" value="0.8" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-own-5y">5Y</label>
+                      <input id="xva-haz-own-5y" type="number" value="1.0" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                    <div class="field pct-input" style="margin-bottom:12px">
+                      <label for="xva-haz-own-10y">10Y</label>
+                      <input id="xva-haz-own-10y" type="number" value="1.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -512,11 +604,11 @@
 
     // Field references by tab
     const pvFields = {
+      type: $('#pv-type'),
       notional: $('#pv-notional'),
       fixedRate: $('#pv-fixed-rate'),
-      maturity: $('#pv-maturity'),
       payFreq: $('#pv-pay-freq'),
-      payFixed: $('#pv-pay-fixed'),
+      maturity: $('#pv-maturity'),
       curve1m: $('#pv-curve-1m'),
       curve3m: $('#pv-curve-3m'),
       curve6m: $('#pv-curve-6m'),
@@ -526,11 +618,11 @@
     };
 
     const riskFields = {
+      type: $('#risk-type'),
       notional: $('#risk-notional'),
       fixedRate: $('#risk-fixed-rate'),
-      maturity: $('#risk-maturity'),
       payFreq: $('#risk-pay-freq'),
-      payFixed: $('#risk-pay-fixed'),
+      maturity: $('#risk-maturity'),
       bumpBp: $('#risk-bump-bp'),
       curve1m: $('#risk-curve-1m'),
       curve3m: $('#risk-curve-3m'),
@@ -541,10 +633,11 @@
     };
 
     const xvaFields = {
+      type: $('#xva-type'),
       notional: $('#xva-notional'),
       fixedRate: $('#xva-fixed-rate'),
-      maturity: $('#xva-maturity'),
       payFreq: $('#xva-pay-freq'),
+      maturity: $('#xva-maturity'),
       curve1m: $('#xva-curve-1m'),
       curve1y: $('#xva-curve-1y'),
       curve5y: $('#xva-curve-5y'),
@@ -644,7 +737,8 @@
     }
 
     function validateField(fieldId, value){
-      const val = parseFloat(value);
+      // Handle notional fields (with commas)
+      const val = fieldId.includes('notional') ? parseNotional(value) : parseFloat(value);
 
       if(isNaN(val)){
         showFieldError(fieldId, 'Must be a number');
@@ -675,6 +769,25 @@
             valid = false;
           }
         });
+        // Also validate text inputs (notional)
+        activeContent.querySelectorAll('input[type="text"]').forEach(input => {
+          if(input.id.includes('notional') && input.value && !validateField(input.id, input.value)){
+            valid = false;
+          }
+        });
+      }
+
+      // Additional validation: Maturity must be multiple of Pay Freq
+      let fields = activeTab === 'pv' ? pvFields : (activeTab === 'risk' ? riskFields : xvaFields);
+      if(fields.maturity && fields.payFreq){
+        const maturity = parseFloat(fields.maturity.value);
+        const payFreqMonths = parseInt(fields.payFreq.value);
+        const maturityMonths = maturity * 12;
+
+        if(maturityMonths % payFreqMonths !== 0){
+          showFieldError(fields.maturity.id, `Maturity must be a multiple of payment frequency (${payFreqMonths} months)`);
+          valid = false;
+        }
       }
 
       return valid;
@@ -684,6 +797,22 @@
     $$('input[type="number"]').forEach(input => {
       input.addEventListener('blur', () => validateField(input.id, input.value));
       input.addEventListener('input', () => clearFieldError(input.id));
+    });
+
+    // Add formatting for Notional fields (text inputs with commas)
+    $$('input[type="text"]').forEach(input => {
+      if(input.id.includes('notional')){
+        input.addEventListener('blur', () => {
+          const num = parseNotional(input.value);
+          if(!isNaN(num) && num > 0){
+            input.value = formatNotional(num);
+          }
+        });
+        input.addEventListener('focus', () => {
+          // Remove commas on focus for easier editing
+          input.value = input.value.replace(/,/g, '');
+        });
+      }
     });
 
     // Loading state management
@@ -698,13 +827,34 @@
       }
     }
 
+    // Helper: Convert percentage to decimal (2.4% → 0.024)
+    function pctToDecimal(pct){
+      return parseFloat(pct) / 100;
+    }
+
+    // Helper: Convert decimal to percentage (0.024 → 2.4)
+    function decimalToPct(dec){
+      return (parseFloat(dec) * 100).toFixed(2);
+    }
+
+    // Helper: Parse notional with comma support (10,000,000 → 10000000)
+    function parseNotional(str){
+      return parseFloat(str.replace(/,/g, ''));
+    }
+
+    // Helper: Format notional with commas (10000000 → 10,000,000)
+    function formatNotional(num){
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
     // Build curve object from fields
     function buildCurve(fields, tenors){
       const curve = {};
       tenors.forEach(tenor => {
         const fieldKey = `curve${tenor.replace(/[MY]/g, '').toLowerCase()}`;
         if(fields[fieldKey]){
-          curve[tenor] = parseFloat(fields[fieldKey].value);
+          // Convert percentage to decimal
+          curve[tenor] = pctToDecimal(fields[fieldKey].value);
         }
       });
       return curve;
@@ -713,11 +863,11 @@
     // Build swap request object
     function buildSwapRequest(fields, includeCurve = true){
       const swap = {
-        notional: parseFloat(fields.notional.value),
-        fixed_rate: parseFloat(fields.fixedRate.value),
+        notional: parseNotional(fields.notional.value),
+        fixed_rate: pctToDecimal(fields.fixedRate.value),
         maturity_years: parseFloat(fields.maturity.value),
         pay_freq_months: parseInt(fields.payFreq.value),
-        pay_fixed: fields.payFixed ? fields.payFixed.value === 'true' : true
+        pay_fixed: fields.type ? fields.type.value === 'true' : true
       };
 
       if(includeCurve){
@@ -765,45 +915,57 @@
     function sample(){
       clearAllErrors();
 
-      const randRate = () => (Math.random()*0.03 + 0.005).toFixed(3);
+      // Helper: Random percentage rate (returns percentage value, not decimal)
+      const randPctRate = () => (Math.random()*3 + 0.5).toFixed(1);
       const randMaturity = () => (Math.floor(Math.random()*8)+2).toFixed(1);
 
       if(activeTab === 'pv'){
-        pvFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
-        pvFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        // Notional with comma formatting
+        pvFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
+        // Fixed rate as percentage
+        pvFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
         pvFields.maturity.value = randMaturity();
-        // Randomize curve
-        pvFields.curve1m.value = randRate();
-        pvFields.curve3m.value = (parseFloat(pvFields.curve1m.value) + 0.002).toFixed(3);
-        pvFields.curve6m.value = (parseFloat(pvFields.curve3m.value) + 0.002).toFixed(3);
-        pvFields.curve1y.value = (parseFloat(pvFields.curve6m.value) + 0.002).toFixed(3);
-        pvFields.curve2y.value = (parseFloat(pvFields.curve1y.value) + 0.004).toFixed(3);
-        pvFields.curve5y.value = (parseFloat(pvFields.curve2y.value) + 0.007).toFixed(3);
+        // Randomize curve (as percentage)
+        pvFields.curve1m.value = randPctRate();
+        pvFields.curve3m.value = (parseFloat(pvFields.curve1m.value) + 0.2).toFixed(1);
+        pvFields.curve6m.value = (parseFloat(pvFields.curve3m.value) + 0.2).toFixed(1);
+        pvFields.curve1y.value = (parseFloat(pvFields.curve6m.value) + 0.2).toFixed(1);
+        pvFields.curve2y.value = (parseFloat(pvFields.curve1y.value) + 0.4).toFixed(1);
+        pvFields.curve5y.value = (parseFloat(pvFields.curve2y.value) + 0.7).toFixed(1);
       } else if(activeTab === 'risk'){
-        riskFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
-        riskFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        riskFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
+        riskFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
         riskFields.maturity.value = randMaturity();
         riskFields.bumpBp.value = '1.0';
-        // Randomize curve
-        riskFields.curve1m.value = randRate();
-        riskFields.curve3m.value = (parseFloat(riskFields.curve1m.value) + 0.002).toFixed(3);
-        riskFields.curve6m.value = (parseFloat(riskFields.curve3m.value) + 0.002).toFixed(3);
-        riskFields.curve1y.value = (parseFloat(riskFields.curve6m.value) + 0.002).toFixed(3);
-        riskFields.curve2y.value = (parseFloat(riskFields.curve1y.value) + 0.004).toFixed(3);
-        riskFields.curve5y.value = (parseFloat(riskFields.curve2y.value) + 0.007).toFixed(3);
+        // Randomize curve (as percentage)
+        riskFields.curve1m.value = randPctRate();
+        riskFields.curve3m.value = (parseFloat(riskFields.curve1m.value) + 0.2).toFixed(1);
+        riskFields.curve6m.value = (parseFloat(riskFields.curve3m.value) + 0.2).toFixed(1);
+        riskFields.curve1y.value = (parseFloat(riskFields.curve6m.value) + 0.2).toFixed(1);
+        riskFields.curve2y.value = (parseFloat(riskFields.curve1y.value) + 0.4).toFixed(1);
+        riskFields.curve5y.value = (parseFloat(riskFields.curve2y.value) + 0.7).toFixed(1);
       } else if(activeTab === 'xva'){
-        xvaFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
-        xvaFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        xvaFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
+        xvaFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
         xvaFields.maturity.value = (Math.floor(Math.random()*8)+3).toFixed(1);
-        xvaFields.lgdCp.value = (Math.random()*0.3 + 0.5).toFixed(2);
-        xvaFields.lgdOwn.value = (Math.random()*0.3 + 0.5).toFixed(2);
-        xvaFields.funding.value = (Math.random()*0.003 + 0.001).toFixed(4);
-        xvaFields.hazCp1y.value = (Math.random()*0.005 + 0.008).toFixed(4);
-        xvaFields.hazCp5y.value = (parseFloat(xvaFields.hazCp1y.value) + 0.002).toFixed(4);
-        xvaFields.hazCp10y.value = (parseFloat(xvaFields.hazCp5y.value) + 0.003).toFixed(4);
-        xvaFields.hazOwn1y.value = (Math.random()*0.004 + 0.006).toFixed(4);
-        xvaFields.hazOwn5y.value = (parseFloat(xvaFields.hazOwn1y.value) + 0.002).toFixed(4);
-        xvaFields.hazOwn10y.value = (parseFloat(xvaFields.hazOwn5y.value) + 0.002).toFixed(4);
+        // XVA parameters as percentage
+        xvaFields.lgdCp.value = (Math.random()*30 + 50).toFixed(0);
+        xvaFields.lgdOwn.value = (Math.random()*30 + 50).toFixed(0);
+        xvaFields.funding.value = (Math.random()*0.3 + 0.1).toFixed(1);
+        xvaFields.coc.value = (Math.random()*5 + 8).toFixed(0);
+        xvaFields.capFactor.value = (Math.random()*20 + 40).toFixed(0);
+        // Curve as percentage
+        xvaFields.curve1m.value = randPctRate();
+        xvaFields.curve1y.value = (parseFloat(xvaFields.curve1m.value) + 0.6).toFixed(1);
+        xvaFields.curve5y.value = (parseFloat(xvaFields.curve1y.value) + 1.1).toFixed(1);
+        xvaFields.curve10y.value = (parseFloat(xvaFields.curve5y.value) + 0.4).toFixed(1);
+        // Hazard curves as percentage
+        xvaFields.hazCp1y.value = (Math.random()*0.5 + 0.8).toFixed(1);
+        xvaFields.hazCp5y.value = (parseFloat(xvaFields.hazCp1y.value) + 0.2).toFixed(1);
+        xvaFields.hazCp10y.value = (parseFloat(xvaFields.hazCp5y.value) + 0.3).toFixed(1);
+        xvaFields.hazOwn1y.value = (Math.random()*0.4 + 0.6).toFixed(1);
+        xvaFields.hazOwn5y.value = (parseFloat(xvaFields.hazOwn1y.value) + 0.2).toFixed(1);
+        xvaFields.hazOwn10y.value = (parseFloat(xvaFields.hazOwn5y.value) + 0.2).toFixed(1);
       }
     }
 
@@ -835,32 +997,32 @@
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
         const xvaSwap = buildSwapRequest(xvaFields, false);
-        // Add XVA-specific curve
+        // Add XVA-specific curve (convert percentage to decimal)
         xvaSwap.curve = {
-          '1M': parseFloat(xvaFields.curve1m.value),
-          '1Y': parseFloat(xvaFields.curve1y.value),
-          '5Y': parseFloat(xvaFields.curve5y.value),
-          '10Y': parseFloat(xvaFields.curve10y.value)
+          '1M': pctToDecimal(xvaFields.curve1m.value),
+          '1Y': pctToDecimal(xvaFields.curve1y.value),
+          '5Y': pctToDecimal(xvaFields.curve5y.value),
+          '10Y': pctToDecimal(xvaFields.curve10y.value)
         };
 
         requestBody = {
           swap: xvaSwap,
           xva: {
-            lgd_cp: parseFloat(xvaFields.lgdCp.value),
-            lgd_own: parseFloat(xvaFields.lgdOwn.value),
+            lgd_cp: pctToDecimal(xvaFields.lgdCp.value),
+            lgd_own: pctToDecimal(xvaFields.lgdOwn.value),
             hazard_cp_curve: {
-              '1Y': parseFloat(xvaFields.hazCp1y.value),
-              '5Y': parseFloat(xvaFields.hazCp5y.value),
-              '10Y': parseFloat(xvaFields.hazCp10y.value)
+              '1Y': pctToDecimal(xvaFields.hazCp1y.value),
+              '5Y': pctToDecimal(xvaFields.hazCp5y.value),
+              '10Y': pctToDecimal(xvaFields.hazCp10y.value)
             },
             hazard_own_curve: {
-              '1Y': parseFloat(xvaFields.hazOwn1y.value),
-              '5Y': parseFloat(xvaFields.hazOwn5y.value),
-              '10Y': parseFloat(xvaFields.hazOwn10y.value)
+              '1Y': pctToDecimal(xvaFields.hazOwn1y.value),
+              '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
+              '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
             },
-            funding_spread: parseFloat(xvaFields.funding.value),
-            cost_of_capital: parseFloat(xvaFields.coc.value),
-            capital_factor: parseFloat(xvaFields.capFactor.value),
+            funding_spread: pctToDecimal(xvaFields.funding.value),
+            cost_of_capital: pctToDecimal(xvaFields.coc.value),
+            capital_factor: pctToDecimal(xvaFields.capFactor.value),
             grid_months: parseInt(xvaFields.grid.value)
           },
           engine: buildEngineToggles()
