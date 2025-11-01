@@ -649,22 +649,6 @@
         <div class="section">
           <h3>Results</h3>
         </div>
-        <div class="section">
-          <div class="results-meta-row">
-            <div class="field">
-              <label>Latency</label>
-              <div id="latency" class="pill">–</div>
-            </div>
-            <div class="field">
-              <label>HTTP</label>
-              <div id="status" class="pill">–</div>
-            </div>
-            <div class="field">
-              <label>Endpoint</label>
-              <div id="ep" class="pill">–</div>
-            </div>
-          </div>
-        </div>
         <div class="section" id="parsed-results">
           <div class="small mutetext" style="text-align:center;padding:20px">Run computation to see results</div>
         </div>
@@ -773,9 +757,6 @@
     const reqbox = $('#req');
     const dot = $('#dot');
     const label = $('#label');
-    const latency = $('#latency');
-    const http = $('#status');
-    const epdisp = $('#ep');
 
     function setStatus(kind, text){
       dot.className = 'dot ' + (kind||'muted');
@@ -807,10 +788,6 @@
       // Clear errors when switching tabs
       clearAllErrors();
       setStatus('muted', 'idle');
-
-      // Update endpoint display
-      const endpointMap = {pv: '/swap/price', risk: '/swap/risks', xva: '/swap/xva'};
-      epdisp.textContent = endpointMap[tabName] || '–';
     }
 
     // Add tab click listeners
@@ -1055,7 +1032,7 @@
     });
 
     // Display parsed results in a formatted way
-    function displayParsedResults(data, mode = 'single'){
+    function displayParsedResults(data){
       const container = $('#parsed-results');
       if(!data){
         container.innerHTML = '<div class="small mutetext" style="text-align:center;padding:20px">No results to display</div>';
@@ -1064,157 +1041,154 @@
 
       let html = '';
 
-      if(mode === 'compare'){
-        // Compare mode: Show side-by-side comparison
-        const data1 = data['JIT/AAD enabled'];
-        const data2 = data['JIT/AAD disabled'];
-        const speedup = data['Speedup'];
-
-        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">';
-        html += '<div style="text-align:center"><strong style="color:var(--brand)">JIT/AAD Enabled</strong></div>';
-        html += '<div style="text-align:center"><strong style="color:var(--muted)">JIT/AAD Disabled</strong></div>';
-        html += '</div>';
-
-        if(activeTab === 'pv'){
-          html += formatPVResults(data1, data2);
-        } else if(activeTab === 'risk'){
-          html += formatRiskResults(data1, data2);
-        } else if(activeTab === 'xva'){
-          html += formatXVAResults(data1, data2);
-        }
-
-        if(speedup){
-          html += `<div style="margin-top:16px;padding:12px;background:rgba(10,102,194,0.05);border-radius:8px;text-align:center">`;
-          html += `<strong>Performance:</strong> <span style="color:var(--brand);font-size:1.2em">${speedup}</span> faster`;
-          html += `</div>`;
-        }
-      } else {
-        // Single mode: Show single result
-        if(activeTab === 'pv'){
-          html += formatPVResults(data);
-        } else if(activeTab === 'risk'){
-          html += formatRiskResults(data);
-        } else if(activeTab === 'xva'){
-          html += formatXVAResults(data);
-        }
+      if(activeTab === 'pv'){
+        html += formatPVResults(data);
+      } else if(activeTab === 'risk'){
+        html += formatRiskResults(data);
+      } else if(activeTab === 'xva'){
+        html += formatXVAResults(data);
       }
 
       container.innerHTML = html;
     }
 
     // Format PV results
-    function formatPVResults(data1, data2 = null){
-      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+    function formatPVResults(data){
+      // If data is an array of engine results, use the first one as baseline for values
+      const baseline = Array.isArray(data) ? data[0] : data;
+      const engines = Array.isArray(data) ? data : [data];
 
-      const formatPVData = (data) => {
-        return `
-          <div class="field" style="margin-bottom:12px">
-            <label>Present Value</label>
-            <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.pv || 0))}</div>
-          </div>
-          <div class="field" style="margin-bottom:12px">
-            <label>Fair Rate</label>
-            <div style="font-size:1.2em;font-weight:500">${decimalToPct(data.fair_rate || 0)}%</div>
-          </div>
-          <div class="field" style="margin-bottom:8px">
-            <label>Computation Time</label>
-            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
-          </div>
-        `;
-      };
+      let html = `
+        <div class="field" style="margin-bottom:12px">
+          <label>Present Value</label>
+          <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(baseline.pv || 0))}</div>
+        </div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Fair Rate</label>
+          <div style="font-size:1.2em;font-weight:500">${decimalToPct(baseline.fair_rate || 0)}%</div>
+        </div>
+      `;
 
-      if(data2){
-        html += '<div>' + formatPVData(data1) + '</div>';
-        html += '<div>' + formatPVData(data2) + '</div>';
+      // Display computation times for all engines
+      if(Array.isArray(data) && data.length > 1){
+        html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
+        html += '<div style="display:grid;gap:8px;margin-top:8px">';
+
+        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
+        engines.forEach((engine, idx) => {
+          const name = engineNames[idx] || `Engine ${idx + 1}`;
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
+          html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
+          html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
+          html += `</div>`;
+        });
+
+        html += '</div></div>';
       } else {
-        html += formatPVData(data1);
+        html += `<div class="field" style="margin-bottom:8px">
+          <label>Computation Time</label>
+          <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
+        </div>`;
       }
 
-      html += '</div>';
       return html;
     }
 
     // Format Risk results
-    function formatRiskResults(data1, data2 = null){
-      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+    function formatRiskResults(data){
+      const baseline = Array.isArray(data) ? data[0] : data;
+      const engines = Array.isArray(data) ? data : [data];
 
-      const formatRiskData = (data) => {
-        let inner = `
-          <div class="field" style="margin-bottom:12px">
-            <label>DV01</label>
-            <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.dv01 || 0))}</div>
-          </div>
-        `;
+      let html = `
+        <div class="field" style="margin-bottom:12px">
+          <label>DV01</label>
+          <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(baseline.dv01 || 0))}</div>
+        </div>
+      `;
 
-        if(data.bucketed_dv01){
-          inner += '<div class="field" style="margin-bottom:12px"><label>Bucketed DV01</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.9em">';
-          for(const [tenor, value] of Object.entries(data.bucketed_dv01)){
-            inner += `<div><span style="color:var(--muted)">${tenor}:</span> <strong>${Math.round(value).toLocaleString()}</strong></div>`;
-          }
-          inner += '</div></div>';
+      if(baseline.bucketed_dv01){
+        html += '<div class="field" style="margin-bottom:12px"><label>Bucketed DV01</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.9em">';
+        for(const [tenor, value] of Object.entries(baseline.bucketed_dv01)){
+          html += `<div><span style="color:var(--muted)">${tenor}:</span> <strong>${Math.round(value).toLocaleString()}</strong></div>`;
         }
-
-        inner += `
-          <div class="field" style="margin-bottom:8px">
-            <label>Computation Time</label>
-            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
-          </div>
-        `;
-        return inner;
-      };
-
-      if(data2){
-        html += '<div>' + formatRiskData(data1) + '</div>';
-        html += '<div>' + formatRiskData(data2) + '</div>';
-      } else {
-        html += formatRiskData(data1);
+        html += '</div></div>';
       }
 
-      html += '</div>';
+      // Display computation times for all engines
+      if(Array.isArray(data) && data.length > 1){
+        html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
+        html += '<div style="display:grid;gap:8px;margin-top:8px">';
+
+        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
+        engines.forEach((engine, idx) => {
+          const name = engineNames[idx] || `Engine ${idx + 1}`;
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
+          html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
+          html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
+          html += `</div>`;
+        });
+
+        html += '</div></div>';
+      } else {
+        html += `<div class="field" style="margin-bottom:8px">
+          <label>Computation Time</label>
+          <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
+        </div>`;
+      }
+
       return html;
     }
 
     // Format XVA results
-    function formatXVAResults(data1, data2 = null){
-      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+    function formatXVAResults(data){
+      const baseline = Array.isArray(data) ? data[0] : data;
+      const engines = Array.isArray(data) ? data : [data];
 
-      const formatXVAData = (data) => {
-        return `
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-            <div class="field">
-              <label>CVA</label>
-              <div style="font-size:1.2em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.cva || 0))}</div>
-            </div>
-            <div class="field">
-              <label>DVA</label>
-              <div style="font-size:1.2em;font-weight:600;color:var(--ok)">${formatNotional(Math.round(data.dva || 0))}</div>
-            </div>
+      let html = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="field">
+            <label>CVA</label>
+            <div style="font-size:1.2em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(baseline.cva || 0))}</div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-            <div class="field">
-              <label>FVA</label>
-              <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(data.fva || 0))}</div>
-            </div>
-            <div class="field">
-              <label>KVA</label>
-              <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(data.kva || 0))}</div>
-            </div>
+          <div class="field">
+            <label>DVA</label>
+            <div style="font-size:1.2em;font-weight:600;color:var(--ok)">${formatNotional(Math.round(baseline.dva || 0))}</div>
           </div>
-          <div class="field" style="margin-bottom:8px">
-            <label>Computation Time</label>
-            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="field">
+            <label>FVA</label>
+            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(baseline.fva || 0))}</div>
           </div>
-        `;
-      };
+          <div class="field">
+            <label>KVA</label>
+            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(baseline.kva || 0))}</div>
+          </div>
+        </div>
+      `;
 
-      if(data2){
-        html += '<div>' + formatXVAData(data1) + '</div>';
-        html += '<div>' + formatXVAData(data2) + '</div>';
+      // Display computation times for all engines
+      if(Array.isArray(data) && data.length > 1){
+        html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
+        html += '<div style="display:grid;gap:8px;margin-top:8px">';
+
+        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
+        engines.forEach((engine, idx) => {
+          const name = engineNames[idx] || `Engine ${idx + 1}`;
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
+          html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
+          html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
+          html += `</div>`;
+        });
+
+        html += '</div></div>';
       } else {
-        html += formatXVAData(data1);
+        html += `<div class="field" style="margin-bottom:8px">
+          <label>Computation Time</label>
+          <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
+        </div>`;
       }
 
-      html += '</div>';
       return html;
     }
 
@@ -1344,11 +1318,8 @@
         };
       }
 
-      epdisp.textContent = '/' + endpoint;
       setStatus('warn','running…');
       setLoading(true);
-      http.textContent = '—';
-      latency.textContent = '—';
 
       const t0 = performance.now();
 
@@ -1363,9 +1334,6 @@
         });
 
         const txt = await res.text();
-        const t1 = performance.now();
-        http.textContent = res.status + ' ' + res.statusText;
-        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
 
         try{
           const parsedData = JSON.parse(txt);
@@ -1374,7 +1342,7 @@
 
           if(res.ok){
             // Display parsed results
-            displayParsedResults(parsedData, 'single');
+            displayParsedResults(parsedData);
             setStatus('ok', 'success');
           } else {
             setStatus('err', `HTTP ${res.status} error`);
@@ -1387,9 +1355,6 @@
           displayParsedResults(null);
         }
       }catch(e){
-        const t1 = performance.now();
-        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
-        http.textContent = 'Network error';
 
         let errorMsg = 'Network request failed. ';
         if(e.message.includes('Failed to fetch')){
@@ -1456,28 +1421,27 @@
         };
       }
 
-      epdisp.textContent = '/' + endpoint + ' (×2)';
       setStatus('warn','comparing…');
       setLoading(true);
-      http.textContent = '—';
-      latency.textContent = '—';
-
-      const t0 = performance.now();
 
       try{
         const url = `${base}/${endpoint}`;
 
-        // Create two requests: with and without JIT/AAD
-        const request1 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: true}};
+        // Create four requests: Baseline, JAX(noJIT), JAX(JIT), JAX(JIT+AAD)
+        const request1 = {...baseRequestBody, engine: {use_jax: false, use_jit: false, use_aad: false}};
         const request2 = {...baseRequestBody, engine: {use_jax: true, use_jit: false, use_aad: false}};
+        const request3 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: false}};
+        const request4 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: true}};
 
         reqbox.textContent = JSON.stringify({
-          'JIT/AAD enabled': request1,
-          'JIT/AAD disabled': request2
+          'Baseline': request1,
+          'JAX (noJIT)': request2,
+          'JAX (JIT)': request3,
+          'JAX (JIT+AAD)': request4
         }, null, 2);
 
-        // Run both requests in parallel
-        const [res1, res2] = await Promise.all([
+        // Run all four requests in parallel
+        const [res1, res2, res3, res4] = await Promise.all([
           fetch(url, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -1487,32 +1451,40 @@
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(request2)
+          }),
+          fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(request3)
+          }),
+          fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(request4)
           })
         ]);
 
-        const [txt1, txt2] = await Promise.all([res1.text(), res2.text()]);
-        const t1 = performance.now();
-
-        http.textContent = `${res1.status}/${res2.status}`;
-        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
+        const [txt1, txt2, txt3, txt4] = await Promise.all([res1.text(), res2.text(), res3.text(), res4.text()]);
 
         try{
           const data1 = JSON.parse(txt1);
           const data2 = JSON.parse(txt2);
+          const data3 = JSON.parse(txt3);
+          const data4 = JSON.parse(txt4);
 
-          const comparison = {
-            'JIT/AAD enabled': data1,
-            'JIT/AAD disabled': data2,
-            'Speedup': data2.latency_ms && data1.latency_ms ?
-              `${(data2.latency_ms / data1.latency_ms).toFixed(2)}x` : 'N/A'
-          };
+          const results = [data1, data2, data3, data4];
 
-          out.textContent = JSON.stringify(comparison, null, 2);
+          out.textContent = JSON.stringify({
+            'Baseline': data1,
+            'JAX (noJIT)': data2,
+            'JAX (JIT)': data3,
+            'JAX (JIT+AAD)': data4
+          }, null, 2);
           out.parentElement.classList.add('fade-in');
 
-          if(res1.ok && res2.ok){
-            // Display parsed comparison results
-            displayParsedResults(comparison, 'compare');
+          if(res1.ok && res2.ok && res3.ok && res4.ok){
+            // Display parsed comparison results as array
+            displayParsedResults(results);
             setStatus('ok', 'success');
           } else {
             setStatus('err', `HTTP error`);
@@ -1520,15 +1492,11 @@
           }
         }
         catch{
-          out.textContent = `JIT/AAD enabled:\n${txt1}\n\nJIT/AAD disabled:\n${txt2}`;
+          out.textContent = `Baseline:\n${txt1}\n\nJAX (noJIT):\n${txt2}\n\nJAX (JIT):\n${txt3}\n\nJAX (JIT+AAD):\n${txt4}`;
           setStatus('err', 'Parse error');
           displayParsedResults(null);
         }
       }catch(e){
-        const t1 = performance.now();
-        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
-        http.textContent = 'Network error';
-
         let errorMsg = 'Network request failed. ';
         if(e.message.includes('Failed to fetch')){
           errorMsg += 'Check your internet connection or API URL.';
