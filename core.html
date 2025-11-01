@@ -615,28 +615,12 @@
             </div>
           </div>
 
-          <!-- Engine Toggles (common) -->
+          <!-- Engine Mode Toggle (common) -->
           <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
             <div class="small mutetext" style="margin-bottom:8px">Engine Configuration:</div>
-            <div class="row" style="grid-template-columns:repeat(3,1fr)">
-              <div class="field">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-                  <input id="use-jax" type="checkbox" checked />
-                  <span>Use JAX</span>
-                </label>
-              </div>
-              <div class="field">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-                  <input id="use-jit" type="checkbox" checked />
-                  <span>Use JIT</span>
-                </label>
-              </div>
-              <div class="field">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-                  <input id="use-aad" type="checkbox" checked />
-                  <span>Use AAD</span>
-                </label>
-              </div>
+            <div class="freq-toggle" id="engine-mode-toggle">
+              <button type="button" class="freq-option active" data-mode="jit-aad">JIT/AAD only</button>
+              <button type="button" class="freq-option" data-mode="compare">Compare</button>
             </div>
           </div>
 
@@ -653,7 +637,7 @@
           • Risk: <code>/swap/risks</code> — DV01 and bucketed sensitivities<br>
           • XVA: <code>/swap/xva</code> — CVA, DVA, FVA, and KVA calculations<br>
           <br>
-          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. Toggle JAX/JIT/AAD to compare performance.
+          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. Switch to "Compare" mode to see JIT/AAD performance gains.
         </div>
       </div>
 
@@ -709,12 +693,8 @@
     // API URL (hardcoded)
     const API_BASE_URL = 'https://neutryx-api.onrender.com';
 
-    // Engine toggles (common)
-    const engineToggles = {
-      useJax: $('#use-jax'),
-      useJit: $('#use-jit'),
-      useAad: $('#use-aad')
-    };
+    // Engine mode (jit-aad or compare)
+    let engineMode = 'jit-aad';
 
     // Pay frequency values (for all tabs)
     let pvPayFreq = 6;
@@ -829,7 +809,7 @@
     // Add frequency toggle listeners
     $$('.freq-toggle').forEach(toggle => {
       const buttons = toggle.querySelectorAll('.freq-option');
-      const tabId = toggle.closest('.tab-content').id;
+      const tabId = toggle.closest('.tab-content')?.id;
 
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -838,11 +818,15 @@
           // Add active to clicked button
           btn.classList.add('active');
 
-          // Update the corresponding frequency variable
-          const freq = parseInt(btn.getAttribute('data-freq'));
-          if(tabId === 'pv-content') pvPayFreq = freq;
-          else if(tabId === 'risk-content') riskPayFreq = freq;
-          else if(tabId === 'xva-content') xvaPayFreq = freq;
+          // Update the corresponding frequency or engine mode variable
+          if(toggle.id === 'engine-mode-toggle'){
+            engineMode = btn.getAttribute('data-mode');
+          } else if(tabId){
+            const freq = parseInt(btn.getAttribute('data-freq'));
+            if(tabId === 'pv-content') pvPayFreq = freq;
+            else if(tabId === 'risk-content') riskPayFreq = freq;
+            else if(tabId === 'xva-content') xvaPayFreq = freq;
+          }
         });
       });
     });
@@ -1016,13 +1000,18 @@
       return swap;
     }
 
-    // Build engine toggles object
-    function buildEngineToggles(){
-      return {
-        use_jax: engineToggles.useJax.checked,
-        use_jit: engineToggles.useJit.checked,
-        use_aad: engineToggles.useAad.checked
-      };
+    // Build engine configuration based on mode
+    function buildEngineConfig(mode = engineMode){
+      if(mode === 'jit-aad'){
+        return {
+          use_jax: true,
+          use_jit: true,
+          use_aad: true
+        };
+      } else {
+        // Compare mode - will be used to generate two configs
+        return null;
+      }
     }
 
     // Copy to clipboard function
@@ -1113,6 +1102,15 @@
         setStatus('err', 'Invalid inputs');
         return;
       }
+
+      if(engineMode === 'compare'){
+        await runCompare();
+      } else {
+        await runSingle();
+      }
+    }
+
+    async function runSingle(){
       const base = API_BASE_URL;
 
       // Determine endpoint based on active tab
@@ -1123,13 +1121,13 @@
         endpoint = 'swap/price';
         requestBody = {
           swap: buildSwapRequest(pvFields, pvPayFreq, true),
-          engine: buildEngineToggles()
+          engine: buildEngineConfig()
         };
       } else if(activeTab === 'risk'){
         endpoint = 'swap/risks';
         requestBody = {
           swap: buildSwapRequest(riskFields, riskPayFreq, true),
-          engine: buildEngineToggles(),
+          engine: buildEngineConfig(),
           bump_bp: parseFloat(riskFields.bumpBp.value)
         };
       } else if(activeTab === 'xva'){
@@ -1163,7 +1161,7 @@
             capital_factor: pctToDecimal(xvaFields.capFactor.value),
             grid_months: parseInt(xvaFields.grid.value)
           },
-          engine: buildEngineToggles()
+          engine: buildEngineConfig()
         };
       }
 
@@ -1207,6 +1205,138 @@
               out.textContent = JSON.stringify(errData, null, 2);
             }
           }catch{}
+        }
+      }catch(e){
+        const t1 = performance.now();
+        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
+        http.textContent = 'Network error';
+
+        let errorMsg = 'Network request failed. ';
+        if(e.message.includes('Failed to fetch')){
+          errorMsg += 'Check your internet connection or API URL.';
+        } else {
+          errorMsg += e.message;
+        }
+        out.textContent = errorMsg;
+        setStatus('err','Network error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function runCompare(){
+      const base = API_BASE_URL;
+
+      // Determine endpoint based on active tab
+      let endpoint;
+      let baseRequestBody = {};
+
+      if(activeTab === 'pv'){
+        endpoint = 'swap/price';
+        baseRequestBody = {
+          swap: buildSwapRequest(pvFields, pvPayFreq, true)
+        };
+      } else if(activeTab === 'risk'){
+        endpoint = 'swap/risks';
+        baseRequestBody = {
+          swap: buildSwapRequest(riskFields, riskPayFreq, true),
+          bump_bp: parseFloat(riskFields.bumpBp.value)
+        };
+      } else if(activeTab === 'xva'){
+        endpoint = 'swap/xva';
+        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, false);
+        xvaSwap.curve = {
+          '1M': pctToDecimal(xvaFields.curve1m.value),
+          '1Y': pctToDecimal(xvaFields.curve1y.value),
+          '5Y': pctToDecimal(xvaFields.curve5y.value),
+          '10Y': pctToDecimal(xvaFields.curve10y.value)
+        };
+
+        baseRequestBody = {
+          swap: xvaSwap,
+          xva: {
+            lgd_cp: pctToDecimal(xvaFields.lgdCp.value),
+            lgd_own: pctToDecimal(xvaFields.lgdOwn.value),
+            hazard_cp_curve: {
+              '1Y': pctToDecimal(xvaFields.hazCp1y.value),
+              '5Y': pctToDecimal(xvaFields.hazCp5y.value),
+              '10Y': pctToDecimal(xvaFields.hazCp10y.value)
+            },
+            hazard_own_curve: {
+              '1Y': pctToDecimal(xvaFields.hazOwn1y.value),
+              '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
+              '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
+            },
+            funding_spread: pctToDecimal(xvaFields.funding.value),
+            cost_of_capital: pctToDecimal(xvaFields.coc.value),
+            capital_factor: pctToDecimal(xvaFields.capFactor.value),
+            grid_months: parseInt(xvaFields.grid.value)
+          }
+        };
+      }
+
+      epdisp.textContent = '/' + endpoint + ' (×2)';
+      setStatus('warn','comparing…');
+      setLoading(true);
+      http.textContent = '—';
+      latency.textContent = '—';
+
+      const t0 = performance.now();
+
+      try{
+        const url = `${base}/${endpoint}`;
+
+        // Create two requests: with and without JIT/AAD
+        const request1 = {...baseRequestBody, engine: {use_jax: true, use_jit: true, use_aad: true}};
+        const request2 = {...baseRequestBody, engine: {use_jax: true, use_jit: false, use_aad: false}};
+
+        reqbox.textContent = JSON.stringify({
+          'JIT/AAD enabled': request1,
+          'JIT/AAD disabled': request2
+        }, null, 2);
+
+        // Run both requests in parallel
+        const [res1, res2] = await Promise.all([
+          fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(request1)
+          }),
+          fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(request2)
+          })
+        ]);
+
+        const [txt1, txt2] = await Promise.all([res1.text(), res2.text()]);
+        const t1 = performance.now();
+
+        http.textContent = `${res1.status}/${res2.status}`;
+        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
+
+        try{
+          const data1 = JSON.parse(txt1);
+          const data2 = JSON.parse(txt2);
+
+          const comparison = {
+            'JIT/AAD enabled': data1,
+            'JIT/AAD disabled': data2,
+            'Speedup': data2.latency_ms && data1.latency_ms ?
+              `${(data2.latency_ms / data1.latency_ms).toFixed(2)}x` : 'N/A'
+          };
+
+          out.textContent = JSON.stringify(comparison, null, 2);
+          out.parentElement.classList.add('fade-in');
+        }
+        catch{
+          out.textContent = `JIT/AAD enabled:\n${txt1}\n\nJIT/AAD disabled:\n${txt2}`;
+        }
+
+        if(res1.ok && res2.ok){
+          setStatus('ok', 'success');
+        } else {
+          setStatus('err', `HTTP error`);
         }
       }catch(e){
         const t1 = performance.now();
