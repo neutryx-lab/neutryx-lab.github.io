@@ -5,7 +5,7 @@
 
 Official website for Neutryx Lab — a research initiative advancing derivative pricing and stochastic modelling through machine learning and computational science.
 
-🌐 **Live Site**: [https://neutryx-lab.github.io](https://neutryx-lab.github.io)
+🌐 **Live Site**: [https://www.neutryx.tech/index.html](https://www.neutryx.tech/index.html)
 
 ---
 
