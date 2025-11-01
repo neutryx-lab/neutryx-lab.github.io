@@ -87,6 +87,17 @@
     /* Fade animation */
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .fade-in{animation:fadeIn .3s ease-in}
+    /* Tabs */
+    .tabs{display:flex;gap:8px;border-bottom:2px solid var(--border);margin-bottom:16px}
+    .tab{padding:10px 16px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;font-size:.95rem;font-weight:500}
+    .tab:hover{color:var(--brand);background:rgba(10,102,194,.05)}
+    .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+    .tab-content{display:none}
+    .tab-content.active{display:block;animation:fadeIn .3s ease-in}
+    @media (max-width:640px){
+      .tabs{overflow-x:auto;flex-wrap:nowrap}
+      .tab{white-space:nowrap;font-size:.9rem;padding:8px 12px}
+    }
   </style>
 </head>
 <body>
@@ -123,72 +134,125 @@
       <!-- Left: Inputs -->
       <div class="card" style="grid-column:span 7">
         <div class="section">
-          <h3>PV / Risk / XVA — Demo Inputs</h3>
-          <div class="small mutetext">The API endpoint is configurable. Start with the simple PV demo; swap to /price when wired to neutryx‑core.</div>
+          <h3>Demo Inputs</h3>
+          <div class="small mutetext">Switch between PV, Risk, and XVA calculations using the tabs below.</div>
         </div>
 
         <div class="section">
-          <div class="row" style="margin-bottom:10px">
-            <div class="field">
-              <label for="api">API Base</label>
-              <input id="api" placeholder="https://neutryx-api.onrender.com" value="https://neutryx-api.onrender.com" />
-            </div>
-            <div class="field">
-              <label for="endpoint">Endpoint</label>
-              <select id="endpoint">
-                <option value="pv">/pv (simple PV)</option>
-                <option value="price">/price (core hook)</option>
-                <option value="add">/add (connectivity)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="product">Product</label>
-              <select id="product">
-                <option value="vanilla_call">Vanilla Call</option>
-                <option value="vanilla_put">Vanilla Put</option>
-                <option value="irs">Interest Rate Swap</option>
-              </select>
-            </div>
-            <div class="field" id="field-notional">
-              <label for="notional">Notional</label>
-              <input id="notional" type="number" value="1000000" step="1000" />
-              <div class="error-msg"></div>
-            </div>
-            <div class="field" id="field-rate">
-              <label for="rate">Rate (r)</label>
-              <input id="rate" type="number" value="0.02" step="0.005" />
-              <div class="error-msg"></div>
-            </div>
-            <div class="field" id="field-t">
-              <label for="t">Maturity (years)</label>
-              <input id="t" type="number" value="1.0" step="0.25" />
-              <div class="error-msg"></div>
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab active" data-tab="pv">PV</button>
+            <button class="tab" data-tab="risk">Risk</button>
+            <button class="tab" data-tab="xva">XVA</button>
+          </div>
+
+          <!-- PV Tab Content -->
+          <div class="tab-content active" id="pv-content">
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-pv-notional">
+                <label for="pv-notional">Notional</label>
+                <input id="pv-notional" type="number" value="1000000" step="1000" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-pv-rate">
+                <label for="pv-rate">Rate (r)</label>
+                <input id="pv-rate" type="number" value="0.02" step="0.005" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-pv-t">
+                <label for="pv-t">Maturity (years)</label>
+                <input id="pv-t" type="number" value="1.0" step="0.25" />
+                <div class="error-msg"></div>
+              </div>
             </div>
           </div>
 
-          <div class="row">
-            <div class="field" id="field-spot">
-              <label for="spot">Spot</label>
-              <input id="spot" type="number" value="100" step="1" />
-              <div class="error-msg"></div>
+          <!-- Risk Tab Content -->
+          <div class="tab-content" id="risk-content">
+            <div class="row" style="margin-bottom:10px">
+              <div class="field">
+                <label for="product">Product</label>
+                <select id="product">
+                  <option value="vanilla_call">Vanilla Call</option>
+                  <option value="vanilla_put">Vanilla Put</option>
+                  <option value="irs">Interest Rate Swap</option>
+                </select>
+              </div>
+              <div class="field" id="field-risk-spot">
+                <label for="risk-spot">Spot</label>
+                <input id="risk-spot" type="number" value="100" step="1" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-strike">
+                <label for="risk-strike">Strike</label>
+                <input id="risk-strike" type="number" value="100" step="1" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-rate">
+                <label for="risk-rate">Rate (r)</label>
+                <input id="risk-rate" type="number" value="0.02" step="0.005" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-vol">
+                <label for="risk-vol">Vol</label>
+                <input id="risk-vol" type="number" value="0.2" step="0.01" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-t">
+                <label for="risk-t">Maturity (years)</label>
+                <input id="risk-t" type="number" value="1.0" step="0.25" />
+                <div class="error-msg"></div>
+              </div>
             </div>
-            <div class="field" id="field-strike">
-              <label for="strike">Strike</label>
-              <input id="strike" type="number" value="100" step="1" />
-              <div class="error-msg"></div>
+            <div class="row">
+              <div class="field">
+                <label for="model">Model</label>
+                <select id="model">
+                  <option value="bs">Black–Scholes</option>
+                  <option value="sabr">SABR</option>
+                </select>
+              </div>
+              <div class="field" id="field-risk-notional">
+                <label for="risk-notional">Notional</label>
+                <input id="risk-notional" type="number" value="1000000" step="1000" />
+                <div class="error-msg"></div>
+              </div>
             </div>
-            <div class="field" id="field-vol">
-              <label for="vol">Vol</label>
-              <input id="vol" type="number" value="0.2" step="0.01" />
-              <div class="error-msg"></div>
+          </div>
+
+          <!-- XVA Tab Content -->
+          <div class="tab-content" id="xva-content">
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-xva-exposure">
+                <label for="xva-exposure">Exposure</label>
+                <input id="xva-exposure" type="number" value="500000" step="1000" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-recovery">
+                <label for="xva-recovery">Recovery Rate</label>
+                <input id="xva-recovery" type="number" value="0.4" step="0.05" min="0" max="1" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-cds">
+                <label for="xva-cds">CDS Spread (bps)</label>
+                <input id="xva-cds" type="number" value="150" step="10" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-funding">
+                <label for="xva-funding">Funding Spread (bps)</label>
+                <input id="xva-funding" type="number" value="50" step="10" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-t">
+                <label for="xva-t">Maturity (years)</label>
+                <input id="xva-t" type="number" value="5.0" step="0.5" />
+                <div class="error-msg"></div>
+              </div>
             </div>
-            <div class="field">
-              <label for="model">Model</label>
-              <select id="model">
-                <option value="bs">Black–Scholes</option>
-                <option value="sabr">SABR</option>
-              </select>
-            </div>
+          </div>
+
+          <!-- Action Buttons (common) -->
+          <div class="row" style="margin-top:12px">
             <div class="field">
               <label>&nbsp;</label>
               <button id="btnRun" class="btn primary" type="button">Run computation</button>
@@ -249,12 +313,37 @@
 
   <script>
     const $ = (q)=>document.querySelector(q);
-    const API = $('#api');
-    const EP = $('#endpoint');
-    const fields = {
-      product: $('#product'), notional: $('#notional'), rate: $('#rate'), t: $('#t'),
-      spot: $('#spot'), strike: $('#strike'), vol: $('#vol'), model: $('#model')
+    const $$ = (q)=>document.querySelectorAll(q);
+
+    // Current active tab
+    let activeTab = 'pv';
+
+    // Field references by tab
+    const pvFields = {
+      notional: $('#pv-notional'),
+      rate: $('#pv-rate'),
+      t: $('#pv-t')
     };
+
+    const riskFields = {
+      product: $('#product'),
+      spot: $('#risk-spot'),
+      strike: $('#risk-strike'),
+      rate: $('#risk-rate'),
+      vol: $('#risk-vol'),
+      t: $('#risk-t'),
+      notional: $('#risk-notional'),
+      model: $('#model')
+    };
+
+    const xvaFields = {
+      exposure: $('#xva-exposure'),
+      recovery: $('#xva-recovery'),
+      cds: $('#xva-cds'),
+      funding: $('#xva-funding'),
+      t: $('#xva-t')
+    };
+
     const btnRun = $('#btnRun');
     const btnSample = $('#btnSample');
     const out = $('#out');
@@ -269,6 +358,45 @@
       dot.className = 'dot ' + (kind||'muted');
       label.textContent = text||'idle';
     }
+
+    // Tab switching
+    function switchTab(tabName){
+      activeTab = tabName;
+
+      // Update tab buttons
+      $$('.tab').forEach(tab => {
+        if(tab.getAttribute('data-tab') === tabName){
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      // Update tab content
+      $$('.tab-content').forEach(content => {
+        if(content.id === `${tabName}-content`){
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+
+      // Clear errors when switching tabs
+      clearAllErrors();
+      setStatus('muted', 'idle');
+
+      // Update endpoint display
+      const endpointMap = {pv: '/pv', risk: '/price', xva: '/xva'};
+      epdisp.textContent = endpointMap[tabName] || '–';
+    }
+
+    // Add tab click listeners
+    $$('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.getAttribute('data-tab');
+        switchTab(tabName);
+      });
+    });
 
     // Validation functions
     function showFieldError(fieldId, message){
@@ -290,7 +418,10 @@
     }
 
     function clearAllErrors(){
-      ['notional', 'rate', 't', 'spot', 'strike', 'vol'].forEach(clearFieldError);
+      // Clear errors for all tabs
+      ['pv-notional', 'pv-rate', 'pv-t',
+       'risk-spot', 'risk-strike', 'risk-rate', 'risk-vol', 'risk-t', 'risk-notional',
+       'xva-exposure', 'xva-recovery', 'xva-cds', 'xva-funding', 'xva-t'].forEach(clearFieldError);
     }
 
     function validateField(fieldId, value){
@@ -301,16 +432,22 @@
         return false;
       }
 
-      switch(fieldId){
+      // Extract base field name (remove pv-/risk-/xva- prefix)
+      const baseId = fieldId.replace(/^(pv|risk|xva)-/, '');
+
+      switch(baseId){
         case 'notional':
         case 'spot':
         case 'strike':
+        case 'exposure':
+        case 't':
           if(val <= 0){
             showFieldError(fieldId, 'Must be positive');
             return false;
           }
           break;
         case 'rate':
+        case 'recovery':
           if(val < 0 || val > 1){
             showFieldError(fieldId, 'Must be between 0 and 1');
             return false;
@@ -322,9 +459,10 @@
             return false;
           }
           break;
-        case 't':
-          if(val <= 0){
-            showFieldError(fieldId, 'Must be positive');
+        case 'cds':
+        case 'funding':
+          if(val < 0){
+            showFieldError(fieldId, 'Must be non-negative');
             return false;
           }
           break;
@@ -338,14 +476,31 @@
       let valid = true;
       clearAllErrors();
 
-      const validations = [
-        ['notional', fields.notional.value],
-        ['rate', fields.rate.value],
-        ['t', fields.t.value],
-        ['spot', fields.spot.value],
-        ['strike', fields.strike.value],
-        ['vol', fields.vol.value]
-      ];
+      let validations = [];
+      if(activeTab === 'pv'){
+        validations = [
+          ['pv-notional', pvFields.notional.value],
+          ['pv-rate', pvFields.rate.value],
+          ['pv-t', pvFields.t.value]
+        ];
+      } else if(activeTab === 'risk'){
+        validations = [
+          ['risk-spot', riskFields.spot.value],
+          ['risk-strike', riskFields.strike.value],
+          ['risk-rate', riskFields.rate.value],
+          ['risk-vol', riskFields.vol.value],
+          ['risk-t', riskFields.t.value],
+          ['risk-notional', riskFields.notional.value]
+        ];
+      } else if(activeTab === 'xva'){
+        validations = [
+          ['xva-exposure', xvaFields.exposure.value],
+          ['xva-recovery', xvaFields.recovery.value],
+          ['xva-cds', xvaFields.cds.value],
+          ['xva-funding', xvaFields.funding.value],
+          ['xva-t', xvaFields.t.value]
+        ];
+      }
 
       validations.forEach(([id, val]) => {
         if(!validateField(id, val)) valid = false;
@@ -355,9 +510,27 @@
     }
 
     // Add blur event listeners for real-time validation
-    ['notional', 'rate', 't', 'spot', 'strike', 'vol'].forEach(id => {
-      fields[id].addEventListener('blur', () => validateField(id, fields[id].value));
-      fields[id].addEventListener('input', () => clearFieldError(id));
+    Object.keys(pvFields).forEach(key => {
+      const field = pvFields[key];
+      const id = field.id;
+      field.addEventListener('blur', () => validateField(id, field.value));
+      field.addEventListener('input', () => clearFieldError(id));
+    });
+
+    Object.keys(riskFields).forEach(key => {
+      const field = riskFields[key];
+      if(field && field.type !== 'select-one'){
+        const id = field.id;
+        field.addEventListener('blur', () => validateField(id, field.value));
+        field.addEventListener('input', () => clearFieldError(id));
+      }
+    });
+
+    Object.keys(xvaFields).forEach(key => {
+      const field = xvaFields[key];
+      const id = field.id;
+      field.addEventListener('blur', () => validateField(id, field.value));
+      field.addEventListener('input', () => clearFieldError(id));
     });
 
     // Loading state management
@@ -365,12 +538,14 @@
       btnRun.disabled = isLoading;
       btnSample.disabled = isLoading;
 
+      const currentFields = activeTab === 'pv' ? pvFields : activeTab === 'risk' ? riskFields : xvaFields;
+
       if(isLoading){
         btnRun.innerHTML = '<span class="spinner"></span> Computing...';
-        Object.values(fields).forEach(f => f.disabled = true);
+        Object.values(currentFields).forEach(f => f.disabled = true);
       } else {
         btnRun.textContent = 'Run computation';
-        Object.values(fields).forEach(f => f.disabled = false);
+        Object.values(currentFields).forEach(f => f.disabled = false);
       }
     }
 
@@ -401,12 +576,25 @@
 
     function sample(){
       clearAllErrors();
-      fields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
-      fields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
-      fields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
-      fields.spot.value = (Math.floor(Math.random()*80)+80).toFixed(0);
-      fields.strike.value = (Math.floor(Math.random()*80)+80).toFixed(0);
-      fields.vol.value = (Math.random()*0.35 + 0.05).toFixed(3);
+
+      if(activeTab === 'pv'){
+        pvFields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
+        pvFields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
+        pvFields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
+      } else if(activeTab === 'risk'){
+        riskFields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
+        riskFields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
+        riskFields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
+        riskFields.spot.value = (Math.floor(Math.random()*80)+80).toFixed(0);
+        riskFields.strike.value = (Math.floor(Math.random()*80)+80).toFixed(0);
+        riskFields.vol.value = (Math.random()*0.35 + 0.05).toFixed(3);
+      } else if(activeTab === 'xva'){
+        xvaFields.exposure.value = (Math.floor(Math.random()*9)+1) * 500_000;
+        xvaFields.recovery.value = (Math.random()*0.4 + 0.2).toFixed(2);
+        xvaFields.cds.value = Math.floor(Math.random()*300 + 50);
+        xvaFields.funding.value = Math.floor(Math.random()*100 + 20);
+        xvaFields.t.value = (Math.floor(Math.random()*8)+2).toFixed(1);
+      }
     }
 
     async function run(){
@@ -416,7 +604,17 @@
         return;
       }
       const base = API.value.replace(/\/$/,'');
-      const endpoint = EP.value;
+
+      // Determine endpoint based on active tab
+      let endpoint;
+      if(activeTab === 'pv'){
+        endpoint = 'pv';
+      } else if(activeTab === 'risk'){
+        endpoint = 'price';
+      } else if(activeTab === 'xva'){
+        endpoint = 'xva';
+      }
+
       epdisp.textContent = '/' + endpoint;
       setStatus('warn','running…');
       setLoading(true);
@@ -427,33 +625,44 @@
 
       try{
         let url = `${base}/${endpoint}`;
-        let res, payload = null;
+        let res;
 
-        if(endpoint === 'add'){
-          const a = 3, b = 5; // connectivity check
-          url += `?a=${a}&b=${b}`;
-          reqbox.textContent = JSON.stringify({method:'GET', url}, null, 2);
-          res = await fetch(url);
-        } else if(endpoint === 'pv'){
+        if(activeTab === 'pv'){
+          // PV endpoint - GET request
           const params = new URLSearchParams({
-            notional: fields.notional.value,
-            rate: fields.rate.value,
-            t: fields.t.value
+            notional: pvFields.notional.value,
+            rate: pvFields.rate.value,
+            t: pvFields.t.value
           });
           url += `?${params.toString()}`;
           reqbox.textContent = JSON.stringify({method:'GET', url}, null, 2);
           res = await fetch(url);
-        } else { // price (POST)
+        } else if(activeTab === 'risk'){
+          // Risk (price) endpoint - POST request
           const body = {
-            product: fields.product.value,
-            notional: +fields.notional.value,
-            spot: +fields.spot.value,
-            strike: +fields.strike.value,
-            rate: +fields.rate.value,
-            vol: +fields.vol.value,
-            maturity: +fields.t.value,
-            model: fields.model.value,
+            product: riskFields.product.value,
+            notional: +riskFields.notional.value,
+            spot: +riskFields.spot.value,
+            strike: +riskFields.strike.value,
+            rate: +riskFields.rate.value,
+            vol: +riskFields.vol.value,
+            maturity: +riskFields.t.value,
+            model: riskFields.model.value,
             market: null
+          };
+          reqbox.textContent = JSON.stringify({method:'POST', url, body}, null, 2);
+          res = await fetch(url, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(body)
+          });
+        } else if(activeTab === 'xva'){
+          // XVA endpoint - POST request
+          const body = {
+            exposure: +xvaFields.exposure.value,
+            recovery: +xvaFields.recovery.value,
+            cds_spread: +xvaFields.cds.value,
+            funding_spread: +xvaFields.funding.value,
+            maturity: +xvaFields.t.value
           };
           reqbox.textContent = JSON.stringify({method:'POST', url, body}, null, 2);
           res = await fetch(url, {
