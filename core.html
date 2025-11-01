@@ -1323,18 +1323,46 @@
         const [txt1, txt2, txt3, txt4] = await Promise.all([res1.text(), res2.text(), res3.text(), res4.text()]);
 
         try{
-          const data1 = JSON.parse(txt1);
-          const data2 = JSON.parse(txt2);
-          const data3 = JSON.parse(txt3);
-          const data4 = JSON.parse(txt4);
+          const raw1 = JSON.parse(txt1);
+          const raw2 = JSON.parse(txt2);
+          const raw3 = JSON.parse(txt3);
+          const raw4 = JSON.parse(txt4);
+
+          // Extract the actual results from the response structure
+          // API returns: {baseline: {...}, jax_nojit: null, ...}
+          // We need to extract the non-null result based on engine config
+          const extractResult = (raw, engineConfig) => {
+            let result = null;
+            if (!engineConfig.use_jax) {
+              result = raw.baseline;
+            } else if (!engineConfig.use_jit) {
+              result = raw.jax_nojit || raw.baseline;
+            } else if (!engineConfig.use_aad) {
+              result = raw.jax_jit || raw.baseline;
+            } else {
+              result = raw.jax_jit || raw.baseline; // JIT+AAD uses jax_jit
+            }
+
+            // Convert time_sec to latency_ms
+            if (result && result.time_sec !== undefined) {
+              result.latency_ms = result.time_sec * 1000;
+            }
+
+            return result;
+          };
+
+          const data1 = extractResult(raw1, {use_jax: false, use_jit: false, use_aad: false});
+          const data2 = extractResult(raw2, {use_jax: true, use_jit: false, use_aad: false});
+          const data3 = extractResult(raw3, {use_jax: true, use_jit: true, use_aad: false});
+          const data4 = extractResult(raw4, {use_jax: true, use_jit: true, use_aad: true});
 
           const results = [data1, data2, data3, data4];
 
           out.textContent = JSON.stringify({
-            'Baseline': data1,
-            'JAX (noJIT)': data2,
-            'JAX (JIT)': data3,
-            'JAX (JIT+AAD)': data4
+            'Baseline': raw1,
+            'JAX (noJIT)': raw2,
+            'JAX (JIT)': raw3,
+            'JAX (JIT+AAD)': raw4
           }, null, 2);
           out.parentElement.classList.add('fade-in');
 
