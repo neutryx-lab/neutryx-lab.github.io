@@ -14,11 +14,20 @@
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
   .brand img { width:36px; height:36px; object-fit:contain; }
   .brand span { font-weight:700; letter-spacing:.2px; }
-  nav { margin-left:auto; display:flex; gap:14px; }
-  nav a { color:var(--pri); text-decoration:none; }
+  nav { margin-left:auto; display:flex; gap:14px; flex-wrap:wrap; }
+  nav a { color:var(--pri); text-decoration:none; font-size:.95rem; }
   nav a:hover { text-decoration:underline; }
+  @media (max-width: 640px) {
+    .wrap { flex-direction:column; align-items:flex-start; gap:12px; }
+    nav { margin-left:0; width:100%; justify-content:flex-start; gap:12px; }
+    .brand span { font-size:.95rem; }
+  }
   h1 { margin:.6rem 0 0; font-size:2.1rem; letter-spacing:.3px; }
   p.lead { margin:.75rem auto 0; max-width:720px; color:var(--fg2); line-height:1.7; text-align:center; }
+  @media (max-width: 640px) {
+    h1 { font-size:1.75rem; }
+    p.lead { font-size:.95rem; padding:0 8px; }
+  }
   main { max-width:980px; margin:0 auto; padding:24px 16px 56px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:24px; }
   .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
