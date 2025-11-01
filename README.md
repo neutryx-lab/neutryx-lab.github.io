@@ -139,7 +139,7 @@ Information about Neutryx Lab's mission, collaboration opportunities, and contac
 
 - **GitHub Organization**: [github.com/neutryx-lab](https://github.com/neutryx-lab)
 - **Neutryx-Core Repository**: [github.com/neutryx-lab/neutryx-core](https://github.com/neutryx-lab/neutryx-core)
-- **Contact**: [contact@neutryx.tech](mailto:contact@neutryx.tech)
+- **Contact**: [GitHub Issues](https://github.com/neutryx-lab/neutryx-lab.github.io/issues)
 
 ---
 
@@ -173,7 +173,7 @@ Neutryx Lab operates as a research initiative within UCL, with intellectual prop
 
 For collaboration enquiries, technical questions, or general information:
 
-Email: [contact@neutryx.tech](mailto:contact@neutryx.tech)
+GitHub Issues: [neutryx-lab.github.io/issues](https://github.com/neutryx-lab/neutryx-lab.github.io/issues)
 
 ---
 
