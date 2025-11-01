@@ -29,21 +29,34 @@
     h1{margin:.3rem 0 .6rem;font-size:2rem}
     p{color:#444;line-height:1.7}
     @media (max-width:640px){
+      main{padding:16px 12px 48px}
       h1{font-size:1.6rem}
+      p{font-size:.95rem}
       .toolbar{font-size:.9rem}
     }
     .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);text-decoration:none;color:var(--brand);background:#fff}
     .btn:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
     .note,.box{background:#fff;border-left:4px solid var(--brand);padding:12px 14px;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+    @media (max-width:640px){
+      .note,.box{padding:10px 12px;font-size:.95rem}
+    }
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
     @media (max-width:900px){
       .grid > .card{grid-column:span 12!important}
+    }
+    @media (max-width:640px){
+      .grid{gap:12px}
     }
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
     .card h3{margin:0 0 8px;font-size:1rem}
     .card .section{padding:16px;border-top:1px solid var(--border)}
     .card .section:first-child{border-top:0;border-top-left-radius:16px;border-top-right-radius:16px}
     .card .section:last-child{border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    @media (max-width:640px){
+      .card{border-radius:12px}
+      .card .section{padding:12px}
+      .card h3{font-size:.95rem}
+    }
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
     .field{display:flex;flex-direction:column;gap:6px}
     .field label{font-size:.9rem;color:#333}
@@ -65,10 +78,20 @@
     .dot{width:9px;height:9px;border-radius:50%}
     .ok{background:var(--ok)} .warn{background:var(--warn)} .err{background:var(--err)} .muted{background:#bbb}
     .mutetext{color:#666}
-    pre{margin:0;background:#0b1020;color:#d7e0ff;border-radius:12px;padding:14px;overflow:auto;border:1px solid #0f1630}
+    pre{margin:0;background:#0b1020;color:#d7e0ff;border-radius:12px;padding:14px;overflow:auto;border:1px solid #0f1630;max-width:100%;word-wrap:break-word;white-space:pre-wrap}
     code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.92rem}
+    @media (max-width:640px){
+      pre{padding:12px;font-size:.85rem}
+      code{font-size:.85rem}
+    }
     .small{font-size:.9rem;color:#555}
+    @media (max-width:640px){
+      .small{font-size:.85rem;line-height:1.6}
+    }
     footer{text-align:center;color:#777;padding:28px 16px 44px}
+    @media (max-width:640px){
+      footer{padding:20px 12px 32px;font-size:.9rem}
+    }
     .pill{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:.8rem;color:#333}
     /* Validation styles */
     .field-error input,.field-error select{border-color:var(--err);background:#fef2f2}
@@ -103,21 +126,66 @@
     /* Two-column layout for PV/Risk */
     .two-col-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
     @media (max-width:900px){
-      .two-col-layout{grid-template-columns:1fr}
+      .two-col-layout{grid-template-columns:1fr;gap:16px}
     }
     .col-section{background:rgba(10,102,194,.02);padding:14px;border-radius:12px;border:1px solid rgba(10,102,194,.1)}
+    @media (max-width:640px){
+      .col-section{padding:12px}
+    }
     /* Three-column layout for XVA */
     .three-col-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
     @media (max-width:1200px){
-      .three-col-layout{grid-template-columns:1fr 1fr}
+      .three-col-layout{grid-template-columns:1fr 1fr;gap:14px}
     }
     @media (max-width:768px){
-      .three-col-layout{grid-template-columns:1fr}
+      .three-col-layout{grid-template-columns:1fr;gap:14px}
     }
     /* Percentage input styling */
     .pct-input{position:relative}
     .pct-input input{padding-right:30px}
     .pct-symbol{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    /* Mobile-friendly input fields */
+    @media (max-width:640px){
+      input,select{font-size:16px;padding:12px}
+      .btn{padding:12px 16px;font-size:1rem}
+      .section-header{font-size:.9rem}
+      label{font-size:.88rem}
+    }
+    /* Curve grid responsive */
+    @media (max-width:640px){
+      .row[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+    }
+    @media (max-width:400px){
+      .row[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr!important}
+      .row[style*="grid-template-columns:repeat(2,1fr)"]{grid-template-columns:1fr!important}
+    }
+    /* API config row */
+    .api-config-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+    @media (max-width:640px){
+      .api-config-row{grid-template-columns:1fr;gap:8px}
+      .desktop-only{display:none}
+    }
+    /* Action buttons responsive */
+    @media (max-width:640px){
+      .actions,.actions .row{grid-template-columns:1fr;gap:8px}
+      .actions .field label{display:none}
+    }
+    /* Results metadata row */
+    .results-meta-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:640px){
+      .results-meta-row{grid-template-columns:1fr;gap:10px}
+    }
+    /* Action buttons */
+    .action-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    @media (max-width:640px){
+      .action-buttons{grid-template-columns:1fr}
+    }
+    /* Results header */
+    .results-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .results-header h3{margin:0}
+    @media (max-width:400px){
+      .results-header{flex-direction:column;align-items:flex-start}
+    }
   </style>
 </head>
 <body>
@@ -152,13 +220,13 @@
     <!-- API URL Configuration -->
     <section class="card" style="margin-bottom:20px">
       <div class="section">
-        <div class="row" style="grid-template-columns:1fr auto">
+        <div class="api-config-row">
           <div class="field">
             <label for="api-url">API Base URL</label>
             <input id="api-url" type="text" value="https://neutryx-api.onrender.com" placeholder="https://neutryx-api.onrender.com" />
           </div>
           <div class="field">
-            <label>&nbsp;</label>
+            <label class="desktop-only">&nbsp;</label>
             <button id="btnTest" class="btn ghost" type="button">Test Connection</button>
           </div>
         </div>
@@ -520,15 +588,9 @@
           </div>
 
           <!-- Action Buttons (common) -->
-          <div class="row" style="margin-top:12px">
-            <div class="field">
-              <label>&nbsp;</label>
-              <button id="btnRun" class="btn primary" type="button">Run computation</button>
-            </div>
-            <div class="field">
-              <label>&nbsp;</label>
-              <button id="btnSample" class="btn ghost" type="button">Sample params</button>
-            </div>
+          <div class="action-buttons">
+            <button id="btnRun" class="btn primary" type="button">Run computation</button>
+            <button id="btnSample" class="btn ghost" type="button">Sample params</button>
           </div>
         </div>
 
@@ -544,12 +606,12 @@
 
       <!-- Right: Results -->
       <div class="card" style="grid-column:span 5">
-        <div class="section" style="display:flex;justify-content:space-between;align-items:center">
-          <h3 style="margin:0">Results</h3>
+        <div class="section results-header">
+          <h3>Results</h3>
           <div class="status"><span id="dot" class="dot muted"></span><span id="label" class="mutetext">idle</span></div>
         </div>
         <div class="section">
-          <div class="row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="results-meta-row">
             <div class="field">
               <label>Latency</label>
               <div id="latency" class="pill">–</div>
