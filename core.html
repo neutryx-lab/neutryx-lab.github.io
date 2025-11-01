@@ -1046,9 +1046,8 @@
         html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
         html += '<div style="display:grid;gap:8px;margin-top:8px">';
 
-        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
-        engines.forEach((engine, idx) => {
-          const name = engineNames[idx] || `Engine ${idx + 1}`;
+        engines.forEach((engine) => {
+          const name = engine.engineName || 'Unknown';
           html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
           html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
           html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
@@ -1057,8 +1056,9 @@
 
         html += '</div></div>';
       } else {
+        const engineLabel = baseline.engineName ? ` (${baseline.engineName})` : '';
         html += `<div class="field" style="margin-bottom:8px">
-          <label>Computation Time</label>
+          <label>Computation Time${engineLabel}</label>
           <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
         </div>`;
       }
@@ -1091,9 +1091,8 @@
         html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
         html += '<div style="display:grid;gap:8px;margin-top:8px">';
 
-        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
-        engines.forEach((engine, idx) => {
-          const name = engineNames[idx] || `Engine ${idx + 1}`;
+        engines.forEach((engine) => {
+          const name = engine.engineName || 'Unknown';
           html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
           html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
           html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
@@ -1102,8 +1101,9 @@
 
         html += '</div></div>';
       } else {
+        const engineLabel = baseline.engineName ? ` (${baseline.engineName})` : '';
         html += `<div class="field" style="margin-bottom:8px">
-          <label>Computation Time</label>
+          <label>Computation Time${engineLabel}</label>
           <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
         </div>`;
       }
@@ -1144,9 +1144,8 @@
         html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
         html += '<div style="display:grid;gap:8px;margin-top:8px">';
 
-        const engineNames = ['Baseline', 'JAX (noJIT)', 'JAX (JIT)', 'JAX (JIT+AAD)'];
-        engines.forEach((engine, idx) => {
-          const name = engineNames[idx] || `Engine ${idx + 1}`;
+        engines.forEach((engine) => {
+          const name = engine.engineName || 'Unknown';
           html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
           html += `<span style="font-size:0.9em;color:var(--muted)">${name}:</span>`;
           html += `<span class="pill">${(engine.latency_ms || 0).toFixed(2)} ms</span>`;
@@ -1155,8 +1154,9 @@
 
         html += '</div></div>';
       } else {
+        const engineLabel = baseline.engineName ? ` (${baseline.engineName})` : '';
         html += `<div class="field" style="margin-bottom:8px">
-          <label>Computation Time</label>
+          <label>Computation Time${engineLabel}</label>
           <div class="pill">${(baseline.latency_ms || 0).toFixed(2)} ms</div>
         </div>`;
       }
@@ -1306,12 +1306,21 @@
             return data;
           };
 
-          const data1 = extractResult(raw.baseline);
-          const data2 = extractResult(raw.jax_nojit);
-          const data3 = extractResult(raw.jax_jit);
-          const data4 = extractResult(raw.jax_jit_aad || raw.jax_jit); // Fallback to jax_jit if jax_jit_aad doesn't exist
+          // Build results array with engine names
+          const engineMap = [
+            { key: 'baseline', name: 'Baseline', data: raw.baseline },
+            { key: 'jax_nojit', name: 'JAX (noJIT)', data: raw.jax_nojit },
+            { key: 'jax_jit', name: 'JAX (JIT)', data: raw.jax_jit },
+            { key: 'jax_jit_aad', name: 'JAX (JIT+AAD)', data: raw.jax_jit_aad }
+          ];
 
-          const results = [data1, data2, data3, data4].filter(r => r != null);
+          const results = engineMap
+            .filter(e => e.data != null)
+            .map(e => {
+              const result = extractResult(e.data);
+              result.engineName = e.name; // Add engine name to result
+              return result;
+            });
 
           out.textContent = JSON.stringify(raw, null, 2);
           out.parentElement.classList.add('fade-in');
