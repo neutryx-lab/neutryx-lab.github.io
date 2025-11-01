@@ -377,11 +377,6 @@
                   <input id="risk-maturity" type="number" value="5" step="0.5" min="0.5" />
                   <div class="error-msg"></div>
                 </div>
-                <div class="field" id="field-risk-bump-bp" style="margin-bottom:12px">
-                  <label for="risk-bump-bp">Bump (bps)</label>
-                  <input id="risk-bump-bp" type="number" value="1.0" step="0.1" />
-                  <div class="error-msg"></div>
-                </div>
               </div>
 
               <!-- Right column: Zero Rate Curve -->
@@ -707,7 +702,6 @@
       notional: $('#risk-notional'),
       fixedRate: $('#risk-fixed-rate'),
       maturity: $('#risk-maturity'),
-      bumpBp: $('#risk-bump-bp'),
       curve1m: $('#risk-curve-1m'),
       curve3m: $('#risk-curve-3m'),
       curve6m: $('#risk-curve-6m'),
@@ -1188,7 +1182,6 @@
         riskFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
         riskFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
         riskFields.maturity.value = randMaturity();
-        riskFields.bumpBp.value = '1.0';
         // Randomize curve (as percentage)
         riskFields.curve1m.value = randPctRate();
         riskFields.curve3m.value = (parseFloat(riskFields.curve1m.value) + 0.2).toFixed(1);
@@ -1241,8 +1234,7 @@
       } else if(activeTab === 'risk'){
         endpoint = 'swap/risks';
         baseRequestBody = {
-          swap: buildSwapRequest(riskFields, riskPayFreq, true),
-          bump_bp: parseFloat(riskFields.bumpBp.value)
+          swap: buildSwapRequest(riskFields, riskPayFreq, true)
         };
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
