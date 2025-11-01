@@ -129,6 +129,22 @@
       <strong>License:</strong> Permissive open‑source (e.g., MIT/BSD). No confidential learning logic is included here.
     </section>
 
+    <!-- API URL Configuration -->
+    <section class="card" style="margin-bottom:20px">
+      <div class="section">
+        <div class="row" style="grid-template-columns:1fr auto">
+          <div class="field">
+            <label for="api-url">API Base URL</label>
+            <input id="api-url" type="text" value="https://api.neutryx.tech" placeholder="https://api.neutryx.tech" />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button id="btnTest" class="btn ghost" type="button">Test Connection</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- DEMO GRID -->
     <section class="grid" style="grid-template-columns:repeat(12,1fr);gap:18px">
       <!-- Left: Inputs -->
@@ -146,107 +162,267 @@
             <button class="tab" data-tab="xva">XVA</button>
           </div>
 
-          <!-- PV Tab Content -->
+          <!-- PV Tab Content (Swap Price) -->
           <div class="tab-content active" id="pv-content">
             <div class="row" style="margin-bottom:10px">
               <div class="field" id="field-pv-notional">
                 <label for="pv-notional">Notional</label>
-                <input id="pv-notional" type="number" value="1000000" step="1000" />
+                <input id="pv-notional" type="number" value="10000000" step="1000" />
                 <div class="error-msg"></div>
               </div>
-              <div class="field" id="field-pv-rate">
-                <label for="pv-rate">Rate (r)</label>
-                <input id="pv-rate" type="number" value="0.02" step="0.005" />
+              <div class="field" id="field-pv-fixed-rate">
+                <label for="pv-fixed-rate">Fixed Rate</label>
+                <input id="pv-fixed-rate" type="number" value="0.024" step="0.001" />
                 <div class="error-msg"></div>
               </div>
-              <div class="field" id="field-pv-t">
-                <label for="pv-t">Maturity (years)</label>
-                <input id="pv-t" type="number" value="1.0" step="0.25" />
+              <div class="field" id="field-pv-maturity">
+                <label for="pv-maturity">Maturity (years)</label>
+                <input id="pv-maturity" type="number" value="5" step="0.5" />
                 <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-pv-pay-freq">
+                <label for="pv-pay-freq">Pay Freq (months)</label>
+                <select id="pv-pay-freq">
+                  <option value="6">6 (Semi-annual)</option>
+                  <option value="12">12 (Annual)</option>
+                  <option value="3">3 (Quarterly)</option>
+                </select>
+              </div>
+              <div class="field" id="field-pv-pay-fixed">
+                <label for="pv-pay-fixed">Pay Fixed</label>
+                <select id="pv-pay-fixed">
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>
+            </div>
+            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates, cont. compounding):</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-pv-curve-1m">
+                <label for="pv-curve-1m">1M</label>
+                <input id="pv-curve-1m" type="number" value="0.005" step="0.001" />
+              </div>
+              <div class="field" id="field-pv-curve-3m">
+                <label for="pv-curve-3m">3M</label>
+                <input id="pv-curve-3m" type="number" value="0.007" step="0.001" />
+              </div>
+              <div class="field" id="field-pv-curve-6m">
+                <label for="pv-curve-6m">6M</label>
+                <input id="pv-curve-6m" type="number" value="0.009" step="0.001" />
+              </div>
+              <div class="field" id="field-pv-curve-1y">
+                <label for="pv-curve-1y">1Y</label>
+                <input id="pv-curve-1y" type="number" value="0.011" step="0.001" />
+              </div>
+              <div class="field" id="field-pv-curve-2y">
+                <label for="pv-curve-2y">2Y</label>
+                <input id="pv-curve-2y" type="number" value="0.015" step="0.001" />
+              </div>
+              <div class="field" id="field-pv-curve-5y">
+                <label for="pv-curve-5y">5Y</label>
+                <input id="pv-curve-5y" type="number" value="0.022" step="0.001" />
               </div>
             </div>
           </div>
 
-          <!-- Risk Tab Content -->
+          <!-- Risk Tab Content (Swap Risks) -->
           <div class="tab-content" id="risk-content">
             <div class="row" style="margin-bottom:10px">
-              <div class="field">
-                <label for="product">Product</label>
-                <select id="product">
-                  <option value="vanilla_call">Vanilla Call</option>
-                  <option value="vanilla_put">Vanilla Put</option>
-                  <option value="irs">Interest Rate Swap</option>
+              <div class="field" id="field-risk-notional">
+                <label for="risk-notional">Notional</label>
+                <input id="risk-notional" type="number" value="10000000" step="1000" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-fixed-rate">
+                <label for="risk-fixed-rate">Fixed Rate</label>
+                <input id="risk-fixed-rate" type="number" value="0.024" step="0.001" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-maturity">
+                <label for="risk-maturity">Maturity (years)</label>
+                <input id="risk-maturity" type="number" value="5" step="0.5" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-risk-pay-freq">
+                <label for="risk-pay-freq">Pay Freq (months)</label>
+                <select id="risk-pay-freq">
+                  <option value="6">6 (Semi-annual)</option>
+                  <option value="12">12 (Annual)</option>
+                  <option value="3">3 (Quarterly)</option>
                 </select>
               </div>
-              <div class="field" id="field-risk-spot">
-                <label for="risk-spot">Spot</label>
-                <input id="risk-spot" type="number" value="100" step="1" />
-                <div class="error-msg"></div>
+              <div class="field" id="field-risk-pay-fixed">
+                <label for="risk-pay-fixed">Pay Fixed</label>
+                <select id="risk-pay-fixed">
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
               </div>
-              <div class="field" id="field-risk-strike">
-                <label for="risk-strike">Strike</label>
-                <input id="risk-strike" type="number" value="100" step="1" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-risk-rate">
-                <label for="risk-rate">Rate (r)</label>
-                <input id="risk-rate" type="number" value="0.02" step="0.005" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-risk-vol">
-                <label for="risk-vol">Vol</label>
-                <input id="risk-vol" type="number" value="0.2" step="0.01" />
-                <div class="error-msg"></div>
-              </div>
-              <div class="field" id="field-risk-t">
-                <label for="risk-t">Maturity (years)</label>
-                <input id="risk-t" type="number" value="1.0" step="0.25" />
+              <div class="field" id="field-risk-bump-bp">
+                <label for="risk-bump-bp">Bump (bps)</label>
+                <input id="risk-bump-bp" type="number" value="1.0" step="0.1" />
                 <div class="error-msg"></div>
               </div>
             </div>
-            <div class="row">
-              <div class="field">
-                <label for="model">Model</label>
-                <select id="model">
-                  <option value="bs">Black–Scholes</option>
-                  <option value="sabr">SABR</option>
-                </select>
+            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates, cont. compounding):</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-risk-curve-1m">
+                <label for="risk-curve-1m">1M</label>
+                <input id="risk-curve-1m" type="number" value="0.005" step="0.001" />
               </div>
-              <div class="field" id="field-risk-notional">
-                <label for="risk-notional">Notional</label>
-                <input id="risk-notional" type="number" value="1000000" step="1000" />
-                <div class="error-msg"></div>
+              <div class="field" id="field-risk-curve-3m">
+                <label for="risk-curve-3m">3M</label>
+                <input id="risk-curve-3m" type="number" value="0.007" step="0.001" />
+              </div>
+              <div class="field" id="field-risk-curve-6m">
+                <label for="risk-curve-6m">6M</label>
+                <input id="risk-curve-6m" type="number" value="0.009" step="0.001" />
+              </div>
+              <div class="field" id="field-risk-curve-1y">
+                <label for="risk-curve-1y">1Y</label>
+                <input id="risk-curve-1y" type="number" value="0.011" step="0.001" />
+              </div>
+              <div class="field" id="field-risk-curve-2y">
+                <label for="risk-curve-2y">2Y</label>
+                <input id="risk-curve-2y" type="number" value="0.015" step="0.001" />
+              </div>
+              <div class="field" id="field-risk-curve-5y">
+                <label for="risk-curve-5y">5Y</label>
+                <input id="risk-curve-5y" type="number" value="0.022" step="0.001" />
               </div>
             </div>
           </div>
 
           <!-- XVA Tab Content -->
           <div class="tab-content" id="xva-content">
+            <div class="small mutetext" style="margin-bottom:8px">Swap Parameters:</div>
             <div class="row" style="margin-bottom:10px">
-              <div class="field" id="field-xva-exposure">
-                <label for="xva-exposure">Exposure</label>
-                <input id="xva-exposure" type="number" value="500000" step="1000" />
+              <div class="field" id="field-xva-notional">
+                <label for="xva-notional">Notional</label>
+                <input id="xva-notional" type="number" value="10000000" step="1000" />
                 <div class="error-msg"></div>
               </div>
-              <div class="field" id="field-xva-recovery">
-                <label for="xva-recovery">Recovery Rate</label>
-                <input id="xva-recovery" type="number" value="0.4" step="0.05" min="0" max="1" />
+              <div class="field" id="field-xva-fixed-rate">
+                <label for="xva-fixed-rate">Fixed Rate</label>
+                <input id="xva-fixed-rate" type="number" value="0.024" step="0.001" />
                 <div class="error-msg"></div>
               </div>
-              <div class="field" id="field-xva-cds">
-                <label for="xva-cds">CDS Spread (bps)</label>
-                <input id="xva-cds" type="number" value="150" step="10" />
+              <div class="field" id="field-xva-maturity">
+                <label for="xva-maturity">Maturity (years)</label>
+                <input id="xva-maturity" type="number" value="7" step="0.5" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-pay-freq">
+                <label for="xva-pay-freq">Pay Freq (months)</label>
+                <select id="xva-pay-freq">
+                  <option value="6">6 (Semi-annual)</option>
+                  <option value="12">12 (Annual)</option>
+                  <option value="3">3 (Quarterly)</option>
+                </select>
+              </div>
+            </div>
+            <div class="small mutetext" style="margin-bottom:8px">Curve (zero rates):</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-xva-curve-1m">
+                <label for="xva-curve-1m">1M</label>
+                <input id="xva-curve-1m" type="number" value="0.005" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-curve-1y">
+                <label for="xva-curve-1y">1Y</label>
+                <input id="xva-curve-1y" type="number" value="0.011" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-curve-5y">
+                <label for="xva-curve-5y">5Y</label>
+                <input id="xva-curve-5y" type="number" value="0.022" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-curve-10y">
+                <label for="xva-curve-10y">10Y</label>
+                <input id="xva-curve-10y" type="number" value="0.026" step="0.001" />
+              </div>
+            </div>
+            <div class="small mutetext" style="margin-bottom:8px">XVA Parameters:</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-xva-lgd-cp">
+                <label for="xva-lgd-cp">LGD CP</label>
+                <input id="xva-lgd-cp" type="number" value="0.6" step="0.05" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-lgd-own">
+                <label for="xva-lgd-own">LGD Own</label>
+                <input id="xva-lgd-own" type="number" value="0.6" step="0.05" />
                 <div class="error-msg"></div>
               </div>
               <div class="field" id="field-xva-funding">
-                <label for="xva-funding">Funding Spread (bps)</label>
-                <input id="xva-funding" type="number" value="50" step="10" />
+                <label for="xva-funding">Funding Spread</label>
+                <input id="xva-funding" type="number" value="0.002" step="0.001" />
                 <div class="error-msg"></div>
               </div>
-              <div class="field" id="field-xva-t">
-                <label for="xva-t">Maturity (years)</label>
-                <input id="xva-t" type="number" value="5.0" step="0.5" />
+              <div class="field" id="field-xva-coc">
+                <label for="xva-coc">Cost of Capital</label>
+                <input id="xva-coc" type="number" value="0.1" step="0.01" />
                 <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-cap-factor">
+                <label for="xva-cap-factor">Capital Factor</label>
+                <input id="xva-cap-factor" type="number" value="0.5" step="0.05" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-xva-grid">
+                <label for="xva-grid">Grid (months)</label>
+                <input id="xva-grid" type="number" value="1" step="1" />
+                <div class="error-msg"></div>
+              </div>
+            </div>
+            <div class="small mutetext" style="margin-bottom:8px">Hazard Curves:</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="field" id="field-xva-haz-cp-1y">
+                <label for="xva-haz-cp-1y">CP 1Y</label>
+                <input id="xva-haz-cp-1y" type="number" value="0.01" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-haz-cp-5y">
+                <label for="xva-haz-cp-5y">CP 5Y</label>
+                <input id="xva-haz-cp-5y" type="number" value="0.012" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-haz-cp-10y">
+                <label for="xva-haz-cp-10y">CP 10Y</label>
+                <input id="xva-haz-cp-10y" type="number" value="0.015" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-haz-own-1y">
+                <label for="xva-haz-own-1y">Own 1Y</label>
+                <input id="xva-haz-own-1y" type="number" value="0.008" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-haz-own-5y">
+                <label for="xva-haz-own-5y">Own 5Y</label>
+                <input id="xva-haz-own-5y" type="number" value="0.010" step="0.001" />
+              </div>
+              <div class="field" id="field-xva-haz-own-10y">
+                <label for="xva-haz-own-10y">Own 10Y</label>
+                <input id="xva-haz-own-10y" type="number" value="0.012" step="0.001" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Engine Toggles (common) -->
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+            <div class="small mutetext" style="margin-bottom:8px">Engine Configuration:</div>
+            <div class="row" style="grid-template-columns:repeat(3,1fr)">
+              <div class="field">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                  <input id="use-jax" type="checkbox" checked />
+                  <span>Use JAX</span>
+                </label>
+              </div>
+              <div class="field">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                  <input id="use-jit" type="checkbox" checked />
+                  <span>Use JIT</span>
+                </label>
+              </div>
+              <div class="field">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                  <input id="use-aad" type="checkbox" checked />
+                  <span>Use AAD</span>
+                </label>
               </div>
             </div>
           </div>
@@ -265,7 +441,12 @@
         </div>
 
         <div class="section small mutetext">
-          Tips: use <span class="kbd">/add</span> to check connectivity (a+b), <span class="kbd">/pv</span> for discount PV, and switch to <span class="kbd">/price</span> once wired to <em>neutryx‑core</em>.
+          <strong>API Endpoints:</strong><br>
+          • PV: <code>/swap/price</code> — Swap pricing with fair rate calculation<br>
+          • Risk: <code>/swap/risks</code> — DV01 and bucketed sensitivities<br>
+          • XVA: <code>/swap/xva</code> — CVA, DVA, FVA, and KVA calculations<br>
+          <br>
+          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. Toggle JAX/JIT/AAD to compare performance.
         </div>
       </div>
 
@@ -318,30 +499,68 @@
     // Current active tab
     let activeTab = 'pv';
 
+    // API URL field
+    const apiUrl = $('#api-url');
+    const btnTest = $('#btnTest');
+
+    // Engine toggles (common)
+    const engineToggles = {
+      useJax: $('#use-jax'),
+      useJit: $('#use-jit'),
+      useAad: $('#use-aad')
+    };
+
     // Field references by tab
     const pvFields = {
       notional: $('#pv-notional'),
-      rate: $('#pv-rate'),
-      t: $('#pv-t')
+      fixedRate: $('#pv-fixed-rate'),
+      maturity: $('#pv-maturity'),
+      payFreq: $('#pv-pay-freq'),
+      payFixed: $('#pv-pay-fixed'),
+      curve1m: $('#pv-curve-1m'),
+      curve3m: $('#pv-curve-3m'),
+      curve6m: $('#pv-curve-6m'),
+      curve1y: $('#pv-curve-1y'),
+      curve2y: $('#pv-curve-2y'),
+      curve5y: $('#pv-curve-5y')
     };
 
     const riskFields = {
-      product: $('#product'),
-      spot: $('#risk-spot'),
-      strike: $('#risk-strike'),
-      rate: $('#risk-rate'),
-      vol: $('#risk-vol'),
-      t: $('#risk-t'),
       notional: $('#risk-notional'),
-      model: $('#model')
+      fixedRate: $('#risk-fixed-rate'),
+      maturity: $('#risk-maturity'),
+      payFreq: $('#risk-pay-freq'),
+      payFixed: $('#risk-pay-fixed'),
+      bumpBp: $('#risk-bump-bp'),
+      curve1m: $('#risk-curve-1m'),
+      curve3m: $('#risk-curve-3m'),
+      curve6m: $('#risk-curve-6m'),
+      curve1y: $('#risk-curve-1y'),
+      curve2y: $('#risk-curve-2y'),
+      curve5y: $('#risk-curve-5y')
     };
 
     const xvaFields = {
-      exposure: $('#xva-exposure'),
-      recovery: $('#xva-recovery'),
-      cds: $('#xva-cds'),
+      notional: $('#xva-notional'),
+      fixedRate: $('#xva-fixed-rate'),
+      maturity: $('#xva-maturity'),
+      payFreq: $('#xva-pay-freq'),
+      curve1m: $('#xva-curve-1m'),
+      curve1y: $('#xva-curve-1y'),
+      curve5y: $('#xva-curve-5y'),
+      curve10y: $('#xva-curve-10y'),
+      lgdCp: $('#xva-lgd-cp'),
+      lgdOwn: $('#xva-lgd-own'),
       funding: $('#xva-funding'),
-      t: $('#xva-t')
+      coc: $('#xva-coc'),
+      capFactor: $('#xva-cap-factor'),
+      grid: $('#xva-grid'),
+      hazCp1y: $('#xva-haz-cp-1y'),
+      hazCp5y: $('#xva-haz-cp-5y'),
+      hazCp10y: $('#xva-haz-cp-10y'),
+      hazOwn1y: $('#xva-haz-own-1y'),
+      hazOwn5y: $('#xva-haz-own-5y'),
+      hazOwn10y: $('#xva-haz-own-10y')
     };
 
     const btnRun = $('#btnRun');
@@ -386,7 +605,7 @@
       setStatus('muted', 'idle');
 
       // Update endpoint display
-      const endpointMap = {pv: '/pv', risk: '/price', xva: '/xva'};
+      const endpointMap = {pv: '/swap/price', risk: '/swap/risks', xva: '/swap/xva'};
       epdisp.textContent = endpointMap[tabName] || '–';
     }
 
@@ -418,10 +637,10 @@
     }
 
     function clearAllErrors(){
-      // Clear errors for all tabs
-      ['pv-notional', 'pv-rate', 'pv-t',
-       'risk-spot', 'risk-strike', 'risk-rate', 'risk-vol', 'risk-t', 'risk-notional',
-       'xva-exposure', 'xva-recovery', 'xva-cds', 'xva-funding', 'xva-t'].forEach(clearFieldError);
+      // Clear errors for all numeric input fields
+      $$('input[type="number"]').forEach(input => {
+        clearFieldError(input.id);
+      });
     }
 
     function validateField(fieldId, value){
@@ -432,40 +651,12 @@
         return false;
       }
 
-      // Extract base field name (remove pv-/risk-/xva- prefix)
-      const baseId = fieldId.replace(/^(pv|risk|xva)-/, '');
-
-      switch(baseId){
-        case 'notional':
-        case 'spot':
-        case 'strike':
-        case 'exposure':
-        case 't':
-          if(val <= 0){
-            showFieldError(fieldId, 'Must be positive');
-            return false;
-          }
-          break;
-        case 'rate':
-        case 'recovery':
-          if(val < 0 || val > 1){
-            showFieldError(fieldId, 'Must be between 0 and 1');
-            return false;
-          }
-          break;
-        case 'vol':
-          if(val <= 0 || val > 2){
-            showFieldError(fieldId, 'Must be between 0 and 2');
-            return false;
-          }
-          break;
-        case 'cds':
-        case 'funding':
-          if(val < 0){
-            showFieldError(fieldId, 'Must be non-negative');
-            return false;
-          }
-          break;
+      // Basic validation: positive for notional/maturity, 0-1 for rates/lgd
+      if(fieldId.includes('notional') || fieldId.includes('maturity') || fieldId.includes('grid')){
+        if(val <= 0){
+          showFieldError(fieldId, 'Must be positive');
+          return false;
+        }
       }
 
       clearFieldError(fieldId);
@@ -476,61 +667,23 @@
       let valid = true;
       clearAllErrors();
 
-      let validations = [];
-      if(activeTab === 'pv'){
-        validations = [
-          ['pv-notional', pvFields.notional.value],
-          ['pv-rate', pvFields.rate.value],
-          ['pv-t', pvFields.t.value]
-        ];
-      } else if(activeTab === 'risk'){
-        validations = [
-          ['risk-spot', riskFields.spot.value],
-          ['risk-strike', riskFields.strike.value],
-          ['risk-rate', riskFields.rate.value],
-          ['risk-vol', riskFields.vol.value],
-          ['risk-t', riskFields.t.value],
-          ['risk-notional', riskFields.notional.value]
-        ];
-      } else if(activeTab === 'xva'){
-        validations = [
-          ['xva-exposure', xvaFields.exposure.value],
-          ['xva-recovery', xvaFields.recovery.value],
-          ['xva-cds', xvaFields.cds.value],
-          ['xva-funding', xvaFields.funding.value],
-          ['xva-t', xvaFields.t.value]
-        ];
+      // Validate all numeric inputs in the active tab
+      const activeContent = $(`#${activeTab}-content`);
+      if(activeContent){
+        activeContent.querySelectorAll('input[type="number"]').forEach(input => {
+          if(input.value && !validateField(input.id, input.value)){
+            valid = false;
+          }
+        });
       }
-
-      validations.forEach(([id, val]) => {
-        if(!validateField(id, val)) valid = false;
-      });
 
       return valid;
     }
 
     // Add blur event listeners for real-time validation
-    Object.keys(pvFields).forEach(key => {
-      const field = pvFields[key];
-      const id = field.id;
-      field.addEventListener('blur', () => validateField(id, field.value));
-      field.addEventListener('input', () => clearFieldError(id));
-    });
-
-    Object.keys(riskFields).forEach(key => {
-      const field = riskFields[key];
-      if(field && field.type !== 'select-one'){
-        const id = field.id;
-        field.addEventListener('blur', () => validateField(id, field.value));
-        field.addEventListener('input', () => clearFieldError(id));
-      }
-    });
-
-    Object.keys(xvaFields).forEach(key => {
-      const field = xvaFields[key];
-      const id = field.id;
-      field.addEventListener('blur', () => validateField(id, field.value));
-      field.addEventListener('input', () => clearFieldError(id));
+    $$('input[type="number"]').forEach(input => {
+      input.addEventListener('blur', () => validateField(input.id, input.value));
+      input.addEventListener('input', () => clearFieldError(input.id));
     });
 
     // Loading state management
@@ -538,15 +691,50 @@
       btnRun.disabled = isLoading;
       btnSample.disabled = isLoading;
 
-      const currentFields = activeTab === 'pv' ? pvFields : activeTab === 'risk' ? riskFields : xvaFields;
-
       if(isLoading){
         btnRun.innerHTML = '<span class="spinner"></span> Computing...';
-        Object.values(currentFields).forEach(f => f.disabled = true);
       } else {
         btnRun.textContent = 'Run computation';
-        Object.values(currentFields).forEach(f => f.disabled = false);
       }
+    }
+
+    // Build curve object from fields
+    function buildCurve(fields, tenors){
+      const curve = {};
+      tenors.forEach(tenor => {
+        const fieldKey = `curve${tenor.replace(/[MY]/g, '').toLowerCase()}`;
+        if(fields[fieldKey]){
+          curve[tenor] = parseFloat(fields[fieldKey].value);
+        }
+      });
+      return curve;
+    }
+
+    // Build swap request object
+    function buildSwapRequest(fields, includeCurve = true){
+      const swap = {
+        notional: parseFloat(fields.notional.value),
+        fixed_rate: parseFloat(fields.fixedRate.value),
+        maturity_years: parseFloat(fields.maturity.value),
+        pay_freq_months: parseInt(fields.payFreq.value),
+        pay_fixed: fields.payFixed ? fields.payFixed.value === 'true' : true
+      };
+
+      if(includeCurve){
+        const tenors = ['1M', '3M', '6M', '1Y', '2Y', '5Y'];
+        swap.curve = buildCurve(fields, tenors);
+      }
+
+      return swap;
+    }
+
+    // Build engine toggles object
+    function buildEngineToggles(){
+      return {
+        use_jax: engineToggles.useJax.checked,
+        use_jit: engineToggles.useJit.checked,
+        use_aad: engineToggles.useAad.checked
+      };
     }
 
     // Copy to clipboard function
@@ -577,23 +765,45 @@
     function sample(){
       clearAllErrors();
 
+      const randRate = () => (Math.random()*0.03 + 0.005).toFixed(3);
+      const randMaturity = () => (Math.floor(Math.random()*8)+2).toFixed(1);
+
       if(activeTab === 'pv'){
-        pvFields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
-        pvFields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
-        pvFields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
+        pvFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
+        pvFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        pvFields.maturity.value = randMaturity();
+        // Randomize curve
+        pvFields.curve1m.value = randRate();
+        pvFields.curve3m.value = (parseFloat(pvFields.curve1m.value) + 0.002).toFixed(3);
+        pvFields.curve6m.value = (parseFloat(pvFields.curve3m.value) + 0.002).toFixed(3);
+        pvFields.curve1y.value = (parseFloat(pvFields.curve6m.value) + 0.002).toFixed(3);
+        pvFields.curve2y.value = (parseFloat(pvFields.curve1y.value) + 0.004).toFixed(3);
+        pvFields.curve5y.value = (parseFloat(pvFields.curve2y.value) + 0.007).toFixed(3);
       } else if(activeTab === 'risk'){
-        riskFields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
-        riskFields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
-        riskFields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
-        riskFields.spot.value = (Math.floor(Math.random()*80)+80).toFixed(0);
-        riskFields.strike.value = (Math.floor(Math.random()*80)+80).toFixed(0);
-        riskFields.vol.value = (Math.random()*0.35 + 0.05).toFixed(3);
+        riskFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
+        riskFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        riskFields.maturity.value = randMaturity();
+        riskFields.bumpBp.value = '1.0';
+        // Randomize curve
+        riskFields.curve1m.value = randRate();
+        riskFields.curve3m.value = (parseFloat(riskFields.curve1m.value) + 0.002).toFixed(3);
+        riskFields.curve6m.value = (parseFloat(riskFields.curve3m.value) + 0.002).toFixed(3);
+        riskFields.curve1y.value = (parseFloat(riskFields.curve6m.value) + 0.002).toFixed(3);
+        riskFields.curve2y.value = (parseFloat(riskFields.curve1y.value) + 0.004).toFixed(3);
+        riskFields.curve5y.value = (parseFloat(riskFields.curve2y.value) + 0.007).toFixed(3);
       } else if(activeTab === 'xva'){
-        xvaFields.exposure.value = (Math.floor(Math.random()*9)+1) * 500_000;
-        xvaFields.recovery.value = (Math.random()*0.4 + 0.2).toFixed(2);
-        xvaFields.cds.value = Math.floor(Math.random()*300 + 50);
-        xvaFields.funding.value = Math.floor(Math.random()*100 + 20);
-        xvaFields.t.value = (Math.floor(Math.random()*8)+2).toFixed(1);
+        xvaFields.notional.value = (Math.floor(Math.random()*9)+1) * 10_000_000;
+        xvaFields.fixedRate.value = (Math.random()*0.02 + 0.015).toFixed(3);
+        xvaFields.maturity.value = (Math.floor(Math.random()*8)+3).toFixed(1);
+        xvaFields.lgdCp.value = (Math.random()*0.3 + 0.5).toFixed(2);
+        xvaFields.lgdOwn.value = (Math.random()*0.3 + 0.5).toFixed(2);
+        xvaFields.funding.value = (Math.random()*0.003 + 0.001).toFixed(4);
+        xvaFields.hazCp1y.value = (Math.random()*0.005 + 0.008).toFixed(4);
+        xvaFields.hazCp5y.value = (parseFloat(xvaFields.hazCp1y.value) + 0.002).toFixed(4);
+        xvaFields.hazCp10y.value = (parseFloat(xvaFields.hazCp5y.value) + 0.003).toFixed(4);
+        xvaFields.hazOwn1y.value = (Math.random()*0.004 + 0.006).toFixed(4);
+        xvaFields.hazOwn5y.value = (parseFloat(xvaFields.hazOwn1y.value) + 0.002).toFixed(4);
+        xvaFields.hazOwn10y.value = (parseFloat(xvaFields.hazOwn5y.value) + 0.002).toFixed(4);
       }
     }
 
@@ -603,16 +813,58 @@
         setStatus('err', 'Invalid inputs');
         return;
       }
-      const base = API.value.replace(/\/$/,'');
+      const base = apiUrl.value.replace(/\/$/,'');
 
       // Determine endpoint based on active tab
       let endpoint;
+      let requestBody = {};
+
       if(activeTab === 'pv'){
-        endpoint = 'pv';
+        endpoint = 'swap/price';
+        requestBody = {
+          swap: buildSwapRequest(pvFields, true),
+          engine: buildEngineToggles()
+        };
       } else if(activeTab === 'risk'){
-        endpoint = 'price';
+        endpoint = 'swap/risks';
+        requestBody = {
+          swap: buildSwapRequest(riskFields, true),
+          engine: buildEngineToggles(),
+          bump_bp: parseFloat(riskFields.bumpBp.value)
+        };
       } else if(activeTab === 'xva'){
-        endpoint = 'xva';
+        endpoint = 'swap/xva';
+        const xvaSwap = buildSwapRequest(xvaFields, false);
+        // Add XVA-specific curve
+        xvaSwap.curve = {
+          '1M': parseFloat(xvaFields.curve1m.value),
+          '1Y': parseFloat(xvaFields.curve1y.value),
+          '5Y': parseFloat(xvaFields.curve5y.value),
+          '10Y': parseFloat(xvaFields.curve10y.value)
+        };
+
+        requestBody = {
+          swap: xvaSwap,
+          xva: {
+            lgd_cp: parseFloat(xvaFields.lgdCp.value),
+            lgd_own: parseFloat(xvaFields.lgdOwn.value),
+            hazard_cp_curve: {
+              '1Y': parseFloat(xvaFields.hazCp1y.value),
+              '5Y': parseFloat(xvaFields.hazCp5y.value),
+              '10Y': parseFloat(xvaFields.hazCp10y.value)
+            },
+            hazard_own_curve: {
+              '1Y': parseFloat(xvaFields.hazOwn1y.value),
+              '5Y': parseFloat(xvaFields.hazOwn5y.value),
+              '10Y': parseFloat(xvaFields.hazOwn10y.value)
+            },
+            funding_spread: parseFloat(xvaFields.funding.value),
+            cost_of_capital: parseFloat(xvaFields.coc.value),
+            capital_factor: parseFloat(xvaFields.capFactor.value),
+            grid_months: parseInt(xvaFields.grid.value)
+          },
+          engine: buildEngineToggles()
+        };
       }
 
       epdisp.textContent = '/' + endpoint;
@@ -624,52 +876,14 @@
       const t0 = performance.now();
 
       try{
-        let url = `${base}/${endpoint}`;
-        let res;
+        const url = `${base}/${endpoint}`;
+        reqbox.textContent = JSON.stringify(requestBody, null, 2);
 
-        if(activeTab === 'pv'){
-          // PV endpoint - GET request
-          const params = new URLSearchParams({
-            notional: pvFields.notional.value,
-            rate: pvFields.rate.value,
-            t: pvFields.t.value
-          });
-          url += `?${params.toString()}`;
-          reqbox.textContent = JSON.stringify({method:'GET', url}, null, 2);
-          res = await fetch(url);
-        } else if(activeTab === 'risk'){
-          // Risk (price) endpoint - POST request
-          const body = {
-            product: riskFields.product.value,
-            notional: +riskFields.notional.value,
-            spot: +riskFields.spot.value,
-            strike: +riskFields.strike.value,
-            rate: +riskFields.rate.value,
-            vol: +riskFields.vol.value,
-            maturity: +riskFields.t.value,
-            model: riskFields.model.value,
-            market: null
-          };
-          reqbox.textContent = JSON.stringify({method:'POST', url, body}, null, 2);
-          res = await fetch(url, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(body)
-          });
-        } else if(activeTab === 'xva'){
-          // XVA endpoint - POST request
-          const body = {
-            exposure: +xvaFields.exposure.value,
-            recovery: +xvaFields.recovery.value,
-            cds_spread: +xvaFields.cds.value,
-            funding_spread: +xvaFields.funding.value,
-            maturity: +xvaFields.t.value
-          };
-          reqbox.textContent = JSON.stringify({method:'POST', url, body}, null, 2);
-          res = await fetch(url, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(body)
-          });
-        }
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(requestBody)
+        });
 
         const txt = await res.text();
         const t1 = performance.now();
@@ -689,7 +903,7 @@
           // Try to parse error message
           try{
             const errData = JSON.parse(txt);
-            if(errData.error || errData.message){
+            if(errData.error || errData.message || errData.detail){
               out.textContent = JSON.stringify(errData, null, 2);
             }
           }catch{}
@@ -712,8 +926,39 @@
       }
     }
 
+    // Test API connection
+    async function testConnection(){
+      const base = apiUrl.value.replace(/\/$/,'');
+      setStatus('warn', 'testing…');
+      btnTest.disabled = true;
+      btnTest.innerHTML = '<span class="spinner"></span> Testing...';
+
+      try{
+        const res = await fetch(`${base}/`);
+        const data = await res.json();
+
+        if(res.ok && data.status === 'ok'){
+          setStatus('ok', 'API connected');
+          alert('✓ API connection successful!\n\n' + JSON.stringify(data, null, 2));
+        } else {
+          setStatus('err', 'API error');
+          alert('✗ API returned unexpected response:\n\n' + JSON.stringify(data, null, 2));
+        }
+      }catch(e){
+        setStatus('err', 'connection failed');
+        alert('✗ Connection failed:\n\n' + e.message);
+      }finally{
+        btnTest.disabled = false;
+        btnTest.textContent = 'Test Connection';
+      }
+    }
+
     btnRun.addEventListener('click', run);
     btnSample.addEventListener('click', sample);
+    btnTest.addEventListener('click', testConnection);
+
+    // Initialize endpoint display
+    switchTab('pv');
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
