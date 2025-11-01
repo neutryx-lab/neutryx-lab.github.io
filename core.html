@@ -3,25 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neutryx‑Core — Open‑Source</title>
+  <title>Neutryx‑Core — Interactive Pricer Demo</title>
   <style>
-  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#f9f9fb;}
-  header{position:sticky; top:0; z-index:50; background:#fff;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
-  .wrap{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;}
-  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;}
-  .brand img{width:36px;height:36px;object-fit:contain;}
-  .brand span{font-weight:700;letter-spacing:.2px;}
-  nav{margin-left:auto;display:flex;gap:14px;}
-  nav a{color:#0a66c2;text-decoration:none;}
-  nav a:hover{text-decoration:underline;}
-  main{max-width:980px;margin:0 auto;padding:24px 16px 56px;}
-  h1{margin:.2rem 0 .4rem;font-size:2rem}
-  p{color:#444;line-height:1.7}
-  .btn{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #d9d9e3;text-decoration:none;color:#0a66c2}
-  .box{background:#fff;border-left:4px solid #f5b100;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  .note{background:#fff;border-left:4px solid #0a66c2;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  footer{text-align:center;color:#777;padding:28px 16px 44px;}
-</style>
+    :root{
+      --ink:#0a0a0b; --muted:#666; --bg:#f6f7fb; --card:#fff;
+      --brand:#0a66c2; --acc:#5b9cff; --ring:rgba(10,102,194,.25);
+      --ok:#0ea75a; --warn:#f5b100; --err:#d93025; --border:#e4e6ef;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:var(--bg)}
+    header{position:sticky;top:0;z-index:50;background:#fff;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .wrap{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:14px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+    .brand img{width:36px;height:36px;object-fit:contain}
+    .brand span{font-weight:800;letter-spacing:.2px}
+    nav{margin-left:auto;display:flex;gap:14px}
+    nav a{color:var(--brand);text-decoration:none}
+    nav a:hover{text-decoration:underline}
+    main{max-width:1080px;margin:0 auto;padding:24px 16px 64px}
+    h1{margin:.3rem 0 .6rem;font-size:2rem}
+    p{color:#444;line-height:1.7}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);text-decoration:none;color:var(--brand);background:#fff}
+    .btn:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .note,.box{background:#fff;border-left:4px solid var(--brand);padding:12px 14px;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+    .card h3{margin:0 0 8px;font-size:1rem}
+    .card .section{padding:16px;border-top:1px solid var(--border)}
+    .card .section:first-child{border-top:0;border-top-left-radius:16px;border-top-right-radius:16px}
+    .card .section:last-child{border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:.9rem;color:#333}
+    .row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+    input,select{appearance:none;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;outline:none}
+    input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 4px var(--ring)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .primary{background:var(--brand);color:#fff;border-color:transparent}
+    .primary:hover{filter:brightness(.98)}
+    .ghost{background:#fff;color:var(--ink)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:#eef2ff;border:1px solid #d4dbff;color:#223;display:inline-block;padding:2px 6px;border-radius:6px}
+    .status{display:inline-flex;align-items:center;gap:8px;font-size:.9rem}
+    .dot{width:9px;height:9px;border-radius:50%}
+    .ok{background:var(--ok)} .warn{background:var(--warn)} .err{background:var(--err)} .muted{background:#bbb}
+    .mutetext{color:#666}
+    pre{margin:0;background:#0b1020;color:#d7e0ff;border-radius:12px;padding:14px;overflow:auto;border:1px solid #0f1630}
+    code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.92rem}
+    .small{font-size:.9rem;color:#555}
+    footer{text-align:center;color:#777;padding:28px 16px 44px}
+    .pill{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:.8rem;color:#333}
+  </style>
 </head>
 <body>
   <header>
@@ -31,9 +62,9 @@
         <span>Neutryx Lab</span>
       </a>
       <nav>
-        <a href="core.html">Neutryx‑Core</a>
+        <a href="core.html" aria-current="page">Neutryx‑Core</a>
         <a href="ai.html">Neutryx‑AI</a>
-        <a href="https://github.com/neutryx-lab">GitHub</a>
+        <a href="https://github.com/neutryx-lab" target="_blank" rel="noreferrer noopener">GitHub</a>
         <a href="mailto:contact@neutryx.tech">Contact</a>
       </nav>
     </div>
@@ -42,15 +73,232 @@
   <main>
     <h1>Neutryx‑Core (Open‑Source)</h1>
     <p>High‑performance numerical engine for pricing/risk/XVA, built on JAX and automatic differentiation.</p>
-    <p>
-      <a class="btn" href="https://github.com/neutryx-lab/neutryx-core">GitHub Repository →</a>
-      <a class="btn" href="https://github.com/neutryx-lab">Organization →</a>
+    <p class="toolbar">
+      <a class="btn" href="https://github.com/neutryx-lab/neutryx-core" target="_blank" rel="noreferrer noopener">GitHub Repository →</a>
+      <a class="btn" href="https://github.com/neutryx-lab" target="_blank" rel="noreferrer noopener">Organization →</a>
+      <span class="pill">Demo: Public API</span>
     </p>
-    <section class="note">
+
+    <section class="note" style="margin:18px 0 22px">
       <strong>License:</strong> Permissive open‑source (e.g., MIT/BSD). No confidential learning logic is included here.
+    </section>
+
+    <!-- DEMO GRID -->
+    <section class="grid" style="grid-template-columns:repeat(12,1fr);gap:18px">
+      <!-- Left: Inputs -->
+      <div class="card" style="grid-column:span 7">
+        <div class="section">
+          <h3>PV / Risk / XVA — Demo Inputs</h3>
+          <div class="small mutetext">The API endpoint is configurable. Start with the simple PV demo; swap to /price when wired to neutryx‑core.</div>
+        </div>
+
+        <div class="section">
+          <div class="row" style="margin-bottom:10px">
+            <div class="field">
+              <label for="api">API Base</label>
+              <input id="api" placeholder="https://neutryx-api.onrender.com" value="https://neutryx-api.onrender.com" />
+            </div>
+            <div class="field">
+              <label for="endpoint">Endpoint</label>
+              <select id="endpoint">
+                <option value="pv">/pv (simple PV)</option>
+                <option value="price">/price (core hook)</option>
+                <option value="add">/add (connectivity)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="product">Product</label>
+              <select id="product">
+                <option value="vanilla_call">Vanilla Call</option>
+                <option value="vanilla_put">Vanilla Put</option>
+                <option value="irs">Interest Rate Swap</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="notional">Notional</label>
+              <input id="notional" type="number" value="1000000" step="1000" />
+            </div>
+            <div class="field">
+              <label for="rate">Rate (r)</label>
+              <input id="rate" type="number" value="0.02" step="0.005" />
+            </div>
+            <div class="field">
+              <label for="t">Maturity (years)</label>
+              <input id="t" type="number" value="1.0" step="0.25" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="spot">Spot</label>
+              <input id="spot" type="number" value="100" step="1" />
+            </div>
+            <div class="field">
+              <label for="strike">Strike</label>
+              <input id="strike" type="number" value="100" step="1" />
+            </div>
+            <div class="field">
+              <label for="vol">Vol</label>
+              <input id="vol" type="number" value="0.2" step="0.01" />
+            </div>
+            <div class="field">
+              <label for="model">Model</label>
+              <select id="model">
+                <option value="bs">Black–Scholes</option>
+                <option value="sabr">SABR</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="btnRun" class="btn primary" type="button">Run computation</button>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="btnSample" class="btn ghost" type="button">Sample params</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section small mutetext">
+          Tips: use <span class="kbd">/add</span> to check connectivity (a+b), <span class="kbd">/pv</span> for discount PV, and switch to <span class="kbd">/price</span> once wired to <em>neutryx‑core</em>.
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="card" style="grid-column:span 5">
+        <div class="section" style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Results</h3>
+          <div class="status"><span id="dot" class="dot muted"></span><span id="label" class="mutetext">idle</span></div>
+        </div>
+        <div class="section">
+          <div class="row" style="grid-template-columns:repeat(3,1fr)">
+            <div class="field">
+              <label>Latency</label>
+              <div id="latency" class="pill">–</div>
+            </div>
+            <div class="field">
+              <label>HTTP</label>
+              <div id="status" class="pill">–</div>
+            </div>
+            <div class="field">
+              <label>Endpoint</label>
+              <div id="ep" class="pill">–</div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <h3 style="margin:0 0 8px">Output</h3>
+          <pre><code id="out">{ /* run to see output */ }</code></pre>
+        </div>
+        <div class="section">
+          <h3 style="margin:0 0 8px">Request</h3>
+          <pre><code id="req">{ /* request payload will appear here */ }</code></pre>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>© 2025 Neutryx Lab · University College London</footer>
+
+  <script>
+    const $ = (q)=>document.querySelector(q);
+    const API = $('#api');
+    const EP = $('#endpoint');
+    const fields = {
+      product: $('#product'), notional: $('#notional'), rate: $('#rate'), t: $('#t'),
+      spot: $('#spot'), strike: $('#strike'), vol: $('#vol'), model: $('#model')
+    };
+    const btnRun = $('#btnRun');
+    const btnSample = $('#btnSample');
+    const out = $('#out');
+    const reqbox = $('#req');
+    const dot = $('#dot');
+    const label = $('#label');
+    const latency = $('#latency');
+    const http = $('#status');
+    const epdisp = $('#ep');
+
+    function setStatus(kind, text){
+      dot.className = 'dot ' + (kind||'muted');
+      label.textContent = text||'idle';
+    }
+
+    function sample(){
+      fields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
+      fields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
+      fields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
+      fields.spot.value = (Math.floor(Math.random()*80)+80).toFixed(0);
+      fields.strike.value = (Math.floor(Math.random()*80)+80).toFixed(0);
+      fields.vol.value = (Math.random()*0.35 + 0.05).toFixed(3);
+    }
+
+    async function run(){
+      const base = API.value.replace(/\/$/,'');
+      const endpoint = EP.value;
+      epdisp.textContent = '/' + endpoint;
+      setStatus('warn','running…');
+      http.textContent = '—';
+      latency.textContent = '—';
+
+      const t0 = performance.now();
+
+      try{
+        let url = `${base}/${endpoint}`;
+        let res, payload = null;
+
+        if(endpoint === 'add'){
+          const a = 3, b = 5; // connectivity check
+          url += `?a=${a}&b=${b}`;
+          reqbox.textContent = JSON.stringify({method:'GET', url}, null, 2);
+          res = await fetch(url);
+        } else if(endpoint === 'pv'){
+          const params = new URLSearchParams({
+            notional: fields.notional.value,
+            rate: fields.rate.value,
+            t: fields.t.value
+          });
+          url += `?${params.toString()}`;
+          reqbox.textContent = JSON.stringify({method:'GET', url}, null, 2);
+          res = await fetch(url);
+        } else { // price (POST)
+          const body = {
+            product: fields.product.value,
+            notional: +fields.notional.value,
+            spot: +fields.spot.value,
+            strike: +fields.strike.value,
+            rate: +fields.rate.value,
+            vol: +fields.vol.value,
+            maturity: +fields.t.value,
+            model: fields.model.value,
+            market: null
+          };
+          reqbox.textContent = JSON.stringify({method:'POST', url, body}, null, 2);
+          res = await fetch(url, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(body)
+          });
+        }
+
+        const txt = await res.text();
+        const t1 = performance.now();
+        http.textContent = res.status + ' ' + res.statusText;
+        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
+
+        try{ out.textContent = JSON.stringify(JSON.parse(txt), null, 2); }
+        catch{ out.textContent = txt; }
+
+        setStatus(res.ok ? 'ok' : 'err', res.ok ? 'ok' : 'error');
+      }catch(e){
+        const t1 = performance.now();
+        latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
+        http.textContent = 'network error';
+        out.textContent = String(e);
+        setStatus('err','error');
+      }
+    }
+
+    btnRun.addEventListener('click', run);
+    btnSample.addEventListener('click', sample);
+  </script>
 </body>
 </html>
