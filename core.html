@@ -230,8 +230,11 @@
     <section class="grid" style="grid-template-columns:repeat(12,1fr);gap:18px">
       <!-- Left: Inputs -->
       <div class="card" style="grid-column:span 7">
-        <div class="section">
+        <div class="section results-header">
           <h3>Demo Inputs</h3>
+          <div class="status"><span id="dot" class="dot muted"></span><span id="label" class="mutetext">idle</span></div>
+        </div>
+        <div class="section">
           <div class="small mutetext">Switch between PV, Risk, and XVA calculations using the tabs below.</div>
         </div>
 
@@ -643,9 +646,8 @@
 
       <!-- Right: Results -->
       <div class="card" style="grid-column:span 5">
-        <div class="section results-header">
+        <div class="section">
           <h3>Results</h3>
-          <div class="status"><span id="dot" class="dot muted"></span><span id="label" class="mutetext">idle</span></div>
         </div>
         <div class="section">
           <div class="results-meta-row">
@@ -663,8 +665,21 @@
             </div>
           </div>
         </div>
+        <div class="section" id="parsed-results">
+          <div class="small mutetext" style="text-align:center;padding:20px">Run computation to see results</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Raw Data Section (Full Width) -->
+    <section class="grid" style="grid-template-columns:1fr;gap:18px;margin-top:18px">
+      <div class="card">
         <div class="section">
-          <h3 style="margin:0 0 8px">Output</h3>
+          <h3>Raw Data</h3>
+          <div class="small mutetext">Request payload and API response</div>
+        </div>
+        <div class="section">
+          <h3 style="margin:0 0 8px">Response</h3>
           <div class="code-wrapper">
             <button class="copy-btn" data-target="out" title="Copy to clipboard">Copy</button>
             <pre><code id="out">{ /* run to see output */ }</code></pre>
@@ -1039,6 +1054,170 @@
       });
     });
 
+    // Display parsed results in a formatted way
+    function displayParsedResults(data, mode = 'single'){
+      const container = $('#parsed-results');
+      if(!data){
+        container.innerHTML = '<div class="small mutetext" style="text-align:center;padding:20px">No results to display</div>';
+        return;
+      }
+
+      let html = '';
+
+      if(mode === 'compare'){
+        // Compare mode: Show side-by-side comparison
+        const data1 = data['JIT/AAD enabled'];
+        const data2 = data['JIT/AAD disabled'];
+        const speedup = data['Speedup'];
+
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">';
+        html += '<div style="text-align:center"><strong style="color:var(--brand)">JIT/AAD Enabled</strong></div>';
+        html += '<div style="text-align:center"><strong style="color:var(--muted)">JIT/AAD Disabled</strong></div>';
+        html += '</div>';
+
+        if(activeTab === 'pv'){
+          html += formatPVResults(data1, data2);
+        } else if(activeTab === 'risk'){
+          html += formatRiskResults(data1, data2);
+        } else if(activeTab === 'xva'){
+          html += formatXVAResults(data1, data2);
+        }
+
+        if(speedup){
+          html += `<div style="margin-top:16px;padding:12px;background:rgba(10,102,194,0.05);border-radius:8px;text-align:center">`;
+          html += `<strong>Performance:</strong> <span style="color:var(--brand);font-size:1.2em">${speedup}</span> faster`;
+          html += `</div>`;
+        }
+      } else {
+        // Single mode: Show single result
+        if(activeTab === 'pv'){
+          html += formatPVResults(data);
+        } else if(activeTab === 'risk'){
+          html += formatRiskResults(data);
+        } else if(activeTab === 'xva'){
+          html += formatXVAResults(data);
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Format PV results
+    function formatPVResults(data1, data2 = null){
+      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+
+      const formatPVData = (data) => {
+        return `
+          <div class="field" style="margin-bottom:12px">
+            <label>Present Value</label>
+            <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.pv || 0))}</div>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label>Fair Rate</label>
+            <div style="font-size:1.2em;font-weight:500">${decimalToPct(data.fair_rate || 0)}%</div>
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <label>Computation Time</label>
+            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
+          </div>
+        `;
+      };
+
+      if(data2){
+        html += '<div>' + formatPVData(data1) + '</div>';
+        html += '<div>' + formatPVData(data2) + '</div>';
+      } else {
+        html += formatPVData(data1);
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    // Format Risk results
+    function formatRiskResults(data1, data2 = null){
+      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+
+      const formatRiskData = (data) => {
+        let inner = `
+          <div class="field" style="margin-bottom:12px">
+            <label>DV01</label>
+            <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.dv01 || 0))}</div>
+          </div>
+        `;
+
+        if(data.bucketed_dv01){
+          inner += '<div class="field" style="margin-bottom:12px"><label>Bucketed DV01</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.9em">';
+          for(const [tenor, value] of Object.entries(data.bucketed_dv01)){
+            inner += `<div><span style="color:var(--muted)">${tenor}:</span> <strong>${Math.round(value).toLocaleString()}</strong></div>`;
+          }
+          inner += '</div></div>';
+        }
+
+        inner += `
+          <div class="field" style="margin-bottom:8px">
+            <label>Computation Time</label>
+            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
+          </div>
+        `;
+        return inner;
+      };
+
+      if(data2){
+        html += '<div>' + formatRiskData(data1) + '</div>';
+        html += '<div>' + formatRiskData(data2) + '</div>';
+      } else {
+        html += formatRiskData(data1);
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    // Format XVA results
+    function formatXVAResults(data1, data2 = null){
+      let html = '<div style="display:grid;grid-template-columns:' + (data2 ? '1fr 1fr' : '1fr') + ';gap:12px">';
+
+      const formatXVAData = (data) => {
+        return `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="field">
+              <label>CVA</label>
+              <div style="font-size:1.2em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(data.cva || 0))}</div>
+            </div>
+            <div class="field">
+              <label>DVA</label>
+              <div style="font-size:1.2em;font-weight:600;color:var(--ok)">${formatNotional(Math.round(data.dva || 0))}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="field">
+              <label>FVA</label>
+              <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(data.fva || 0))}</div>
+            </div>
+            <div class="field">
+              <label>KVA</label>
+              <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(data.kva || 0))}</div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <label>Computation Time</label>
+            <div class="pill">${(data.latency_ms || 0).toFixed(2)} ms</div>
+          </div>
+        `;
+      };
+
+      if(data2){
+        html += '<div>' + formatXVAData(data1) + '</div>';
+        html += '<div>' + formatXVAData(data2) + '</div>';
+      } else {
+        html += formatXVAData(data1);
+      }
+
+      html += '</div>';
+      return html;
+    }
+
     function sample(){
       clearAllErrors();
 
@@ -1189,22 +1368,23 @@
         latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
 
         try{
-          out.textContent = JSON.stringify(JSON.parse(txt), null, 2);
+          const parsedData = JSON.parse(txt);
+          out.textContent = JSON.stringify(parsedData, null, 2);
           out.parentElement.classList.add('fade-in');
-        }
-        catch{ out.textContent = txt; }
 
-        if(res.ok){
-          setStatus('ok', 'success');
-        } else {
-          setStatus('err', `HTTP ${res.status} error`);
-          // Try to parse error message
-          try{
-            const errData = JSON.parse(txt);
-            if(errData.error || errData.message || errData.detail){
-              out.textContent = JSON.stringify(errData, null, 2);
-            }
-          }catch{}
+          if(res.ok){
+            // Display parsed results
+            displayParsedResults(parsedData, 'single');
+            setStatus('ok', 'success');
+          } else {
+            setStatus('err', `HTTP ${res.status} error`);
+            displayParsedResults(null);
+          }
+        }
+        catch{
+          out.textContent = txt;
+          setStatus('err', 'Parse error');
+          displayParsedResults(null);
         }
       }catch(e){
         const t1 = performance.now();
@@ -1219,6 +1399,7 @@
         }
         out.textContent = errorMsg;
         setStatus('err','Network error');
+        displayParsedResults(null);
       } finally {
         setLoading(false);
       }
@@ -1328,15 +1509,20 @@
 
           out.textContent = JSON.stringify(comparison, null, 2);
           out.parentElement.classList.add('fade-in');
+
+          if(res1.ok && res2.ok){
+            // Display parsed comparison results
+            displayParsedResults(comparison, 'compare');
+            setStatus('ok', 'success');
+          } else {
+            setStatus('err', `HTTP error`);
+            displayParsedResults(null);
+          }
         }
         catch{
           out.textContent = `JIT/AAD enabled:\n${txt1}\n\nJIT/AAD disabled:\n${txt2}`;
-        }
-
-        if(res1.ok && res2.ok){
-          setStatus('ok', 'success');
-        } else {
-          setStatus('err', `HTTP error`);
+          setStatus('err', 'Parse error');
+          displayParsedResults(null);
         }
       }catch(e){
         const t1 = performance.now();
@@ -1351,6 +1537,7 @@
         }
         out.textContent = errorMsg;
         setStatus('err','Network error');
+        displayParsedResults(null);
       } finally {
         setLoading(false);
       }
