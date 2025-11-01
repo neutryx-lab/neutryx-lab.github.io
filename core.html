@@ -618,15 +618,6 @@
             </div>
           </div>
 
-          <!-- Engine Mode Toggle (common) -->
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
-            <div class="small mutetext" style="margin-bottom:8px">Engine Configuration:</div>
-            <div class="freq-toggle" id="engine-mode-toggle">
-              <button type="button" class="freq-option active" data-mode="jit-aad">JIT/AAD only</button>
-              <button type="button" class="freq-option" data-mode="compare">Compare</button>
-            </div>
-          </div>
-
           <!-- Action Buttons (common) -->
           <div class="action-buttons">
             <button id="btnRun" class="btn primary" type="button">Run computation</button>
@@ -640,7 +631,7 @@
           • Risk: <code>/swap/risks</code> — DV01 and bucketed sensitivities<br>
           • XVA: <code>/swap/xva</code> — CVA, DVA, FVA, and KVA calculations<br>
           <br>
-          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. Switch to "Compare" mode to see JIT/AAD performance gains.
+          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. All computations run across 4 engine configurations to compare performance.
         </div>
       </div>
 
@@ -691,9 +682,6 @@
 
     // API URL (hardcoded)
     const API_BASE_URL = 'https://neutryx-api.onrender.com';
-
-    // Engine mode (jit-aad or compare)
-    let engineMode = 'jit-aad';
 
     // Pay frequency values (for all tabs)
     let pvPayFreq = 6;
@@ -810,10 +798,8 @@
           // Add active to clicked button
           btn.classList.add('active');
 
-          // Update the corresponding frequency or engine mode variable
-          if(toggle.id === 'engine-mode-toggle'){
-            engineMode = btn.getAttribute('data-mode');
-          } else if(tabId){
+          // Update the corresponding frequency variable
+          if(tabId){
             const freq = parseInt(btn.getAttribute('data-freq'));
             if(tabId === 'pv-content') pvPayFreq = freq;
             else if(tabId === 'risk-content') riskPayFreq = freq;
@@ -990,20 +976,6 @@
       }
 
       return swap;
-    }
-
-    // Build engine configuration based on mode
-    function buildEngineConfig(mode = engineMode){
-      if(mode === 'jit-aad'){
-        return {
-          use_jax: true,
-          use_jit: true,
-          use_aad: true
-        };
-      } else {
-        // Compare mode - will be used to generate two configs
-        return null;
-      }
     }
 
     // Copy to clipboard function
@@ -1255,122 +1227,6 @@
         setStatus('err', 'Invalid inputs');
         return;
       }
-
-      if(engineMode === 'compare'){
-        await runCompare();
-      } else {
-        await runSingle();
-      }
-    }
-
-    async function runSingle(){
-      const base = API_BASE_URL;
-
-      // Determine endpoint based on active tab
-      let endpoint;
-      let requestBody = {};
-
-      if(activeTab === 'pv'){
-        endpoint = 'swap/price';
-        requestBody = {
-          swap: buildSwapRequest(pvFields, pvPayFreq, true),
-          engine: buildEngineConfig()
-        };
-      } else if(activeTab === 'risk'){
-        endpoint = 'swap/risks';
-        requestBody = {
-          swap: buildSwapRequest(riskFields, riskPayFreq, true),
-          engine: buildEngineConfig(),
-          bump_bp: parseFloat(riskFields.bumpBp.value)
-        };
-      } else if(activeTab === 'xva'){
-        endpoint = 'swap/xva';
-        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, false);
-        // Add XVA-specific curve (convert percentage to decimal)
-        xvaSwap.curve = {
-          '1M': pctToDecimal(xvaFields.curve1m.value),
-          '1Y': pctToDecimal(xvaFields.curve1y.value),
-          '5Y': pctToDecimal(xvaFields.curve5y.value),
-          '10Y': pctToDecimal(xvaFields.curve10y.value)
-        };
-
-        requestBody = {
-          swap: xvaSwap,
-          xva: {
-            lgd_cp: pctToDecimal(xvaFields.lgdCp.value),
-            lgd_own: pctToDecimal(xvaFields.lgdOwn.value),
-            hazard_cp_curve: {
-              '1Y': pctToDecimal(xvaFields.hazCp1y.value),
-              '5Y': pctToDecimal(xvaFields.hazCp5y.value),
-              '10Y': pctToDecimal(xvaFields.hazCp10y.value)
-            },
-            hazard_own_curve: {
-              '1Y': pctToDecimal(xvaFields.hazOwn1y.value),
-              '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
-              '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
-            },
-            funding_spread: pctToDecimal(xvaFields.funding.value),
-            cost_of_capital: pctToDecimal(xvaFields.coc.value),
-            capital_factor: pctToDecimal(xvaFields.capFactor.value),
-            grid_months: parseInt(xvaFields.grid.value)
-          },
-          engine: buildEngineConfig()
-        };
-      }
-
-      setStatus('warn','running…');
-      setLoading(true);
-
-      const t0 = performance.now();
-
-      try{
-        const url = `${base}/${endpoint}`;
-        reqbox.textContent = JSON.stringify(requestBody, null, 2);
-
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(requestBody)
-        });
-
-        const txt = await res.text();
-
-        try{
-          const parsedData = JSON.parse(txt);
-          out.textContent = JSON.stringify(parsedData, null, 2);
-          out.parentElement.classList.add('fade-in');
-
-          if(res.ok){
-            // Display parsed results
-            displayParsedResults(parsedData);
-            setStatus('ok', 'success');
-          } else {
-            setStatus('err', `HTTP ${res.status} error`);
-            displayParsedResults(null);
-          }
-        }
-        catch{
-          out.textContent = txt;
-          setStatus('err', 'Parse error');
-          displayParsedResults(null);
-        }
-      }catch(e){
-
-        let errorMsg = 'Network request failed. ';
-        if(e.message.includes('Failed to fetch')){
-          errorMsg += 'Check your internet connection or API URL.';
-        } else {
-          errorMsg += e.message;
-        }
-        out.textContent = errorMsg;
-        setStatus('err','Network error');
-        displayParsedResults(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    async function runCompare(){
       const base = API_BASE_URL;
 
       // Determine endpoint based on active tab
@@ -1421,7 +1277,7 @@
         };
       }
 
-      setStatus('warn','comparing…');
+      setStatus('warn','running…');
       setLoading(true);
 
       try{
