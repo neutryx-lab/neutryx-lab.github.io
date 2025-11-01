@@ -70,6 +70,23 @@
     .small{font-size:.9rem;color:#555}
     footer{text-align:center;color:#777;padding:28px 16px 44px}
     .pill{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:.8rem;color:#333}
+    /* Validation styles */
+    .field-error input,.field-error select{border-color:var(--err);background:#fef2f2}
+    .error-msg{color:var(--err);font-size:.85rem;margin-top:4px;display:none}
+    .field-error .error-msg{display:block}
+    /* Loading spinner */
+    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Copy button */
+    .copy-btn{position:absolute;top:10px;right:10px;padding:4px 8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#d7e0ff;font-size:.75rem;cursor:pointer;transition:all .2s}
+    .copy-btn:hover{background:rgba(255,255,255,.2)}
+    .copy-btn.copied{background:var(--ok);color:#fff;border-color:var(--ok)}
+    .code-wrapper{position:relative}
+    /* Disabled state */
+    button:disabled,input:disabled,select:disabled{opacity:.6;cursor:not-allowed}
+    /* Fade animation */
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .fade-in{animation:fadeIn .3s ease-in}
   </style>
 </head>
 <body>
@@ -132,32 +149,38 @@
                 <option value="irs">Interest Rate Swap</option>
               </select>
             </div>
-            <div class="field">
+            <div class="field" id="field-notional">
               <label for="notional">Notional</label>
               <input id="notional" type="number" value="1000000" step="1000" />
+              <div class="error-msg"></div>
             </div>
-            <div class="field">
+            <div class="field" id="field-rate">
               <label for="rate">Rate (r)</label>
               <input id="rate" type="number" value="0.02" step="0.005" />
+              <div class="error-msg"></div>
             </div>
-            <div class="field">
+            <div class="field" id="field-t">
               <label for="t">Maturity (years)</label>
               <input id="t" type="number" value="1.0" step="0.25" />
+              <div class="error-msg"></div>
             </div>
           </div>
 
           <div class="row">
-            <div class="field">
+            <div class="field" id="field-spot">
               <label for="spot">Spot</label>
               <input id="spot" type="number" value="100" step="1" />
+              <div class="error-msg"></div>
             </div>
-            <div class="field">
+            <div class="field" id="field-strike">
               <label for="strike">Strike</label>
               <input id="strike" type="number" value="100" step="1" />
+              <div class="error-msg"></div>
             </div>
-            <div class="field">
+            <div class="field" id="field-vol">
               <label for="vol">Vol</label>
               <input id="vol" type="number" value="0.2" step="0.01" />
+              <div class="error-msg"></div>
             </div>
             <div class="field">
               <label for="model">Model</label>
@@ -206,11 +229,17 @@
         </div>
         <div class="section">
           <h3 style="margin:0 0 8px">Output</h3>
-          <pre><code id="out">{ /* run to see output */ }</code></pre>
+          <div class="code-wrapper">
+            <button class="copy-btn" data-target="out" title="Copy to clipboard">Copy</button>
+            <pre><code id="out">{ /* run to see output */ }</code></pre>
+          </div>
         </div>
         <div class="section">
           <h3 style="margin:0 0 8px">Request</h3>
-          <pre><code id="req">{ /* request payload will appear here */ }</code></pre>
+          <div class="code-wrapper">
+            <button class="copy-btn" data-target="req" title="Copy to clipboard">Copy</button>
+            <pre><code id="req">{ /* request payload will appear here */ }</code></pre>
+          </div>
         </div>
       </div>
     </section>
@@ -241,7 +270,137 @@
       label.textContent = text||'idle';
     }
 
+    // Validation functions
+    function showFieldError(fieldId, message){
+      const fieldEl = $(`#field-${fieldId}`);
+      if(fieldEl){
+        fieldEl.classList.add('field-error');
+        const errMsg = fieldEl.querySelector('.error-msg');
+        if(errMsg) errMsg.textContent = message;
+      }
+    }
+
+    function clearFieldError(fieldId){
+      const fieldEl = $(`#field-${fieldId}`);
+      if(fieldEl){
+        fieldEl.classList.remove('field-error');
+        const errMsg = fieldEl.querySelector('.error-msg');
+        if(errMsg) errMsg.textContent = '';
+      }
+    }
+
+    function clearAllErrors(){
+      ['notional', 'rate', 't', 'spot', 'strike', 'vol'].forEach(clearFieldError);
+    }
+
+    function validateField(fieldId, value){
+      const val = parseFloat(value);
+
+      if(isNaN(val)){
+        showFieldError(fieldId, 'Must be a number');
+        return false;
+      }
+
+      switch(fieldId){
+        case 'notional':
+        case 'spot':
+        case 'strike':
+          if(val <= 0){
+            showFieldError(fieldId, 'Must be positive');
+            return false;
+          }
+          break;
+        case 'rate':
+          if(val < 0 || val > 1){
+            showFieldError(fieldId, 'Must be between 0 and 1');
+            return false;
+          }
+          break;
+        case 'vol':
+          if(val <= 0 || val > 2){
+            showFieldError(fieldId, 'Must be between 0 and 2');
+            return false;
+          }
+          break;
+        case 't':
+          if(val <= 0){
+            showFieldError(fieldId, 'Must be positive');
+            return false;
+          }
+          break;
+      }
+
+      clearFieldError(fieldId);
+      return true;
+    }
+
+    function validateAllFields(){
+      let valid = true;
+      clearAllErrors();
+
+      const validations = [
+        ['notional', fields.notional.value],
+        ['rate', fields.rate.value],
+        ['t', fields.t.value],
+        ['spot', fields.spot.value],
+        ['strike', fields.strike.value],
+        ['vol', fields.vol.value]
+      ];
+
+      validations.forEach(([id, val]) => {
+        if(!validateField(id, val)) valid = false;
+      });
+
+      return valid;
+    }
+
+    // Add blur event listeners for real-time validation
+    ['notional', 'rate', 't', 'spot', 'strike', 'vol'].forEach(id => {
+      fields[id].addEventListener('blur', () => validateField(id, fields[id].value));
+      fields[id].addEventListener('input', () => clearFieldError(id));
+    });
+
+    // Loading state management
+    function setLoading(isLoading){
+      btnRun.disabled = isLoading;
+      btnSample.disabled = isLoading;
+
+      if(isLoading){
+        btnRun.innerHTML = '<span class="spinner"></span> Computing...';
+        Object.values(fields).forEach(f => f.disabled = true);
+      } else {
+        btnRun.textContent = 'Run computation';
+        Object.values(fields).forEach(f => f.disabled = false);
+      }
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard(text, button){
+      navigator.clipboard.writeText(text).then(() => {
+        button.textContent = '✓ Copied';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'Copy';
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        button.textContent = 'Failed';
+        setTimeout(() => button.textContent = 'Copy', 2000);
+      });
+    }
+
+    // Add copy button event listeners
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const targetEl = $(`#${targetId}`);
+        if(targetEl) copyToClipboard(targetEl.textContent, btn);
+      });
+    });
+
     function sample(){
+      clearAllErrors();
       fields.notional.value = (Math.floor(Math.random()*9)+1) * 1_000_000;
       fields.rate.value = (Math.random()*0.05 + 0.005).toFixed(3);
       fields.t.value = (Math.floor(Math.random()*8)+1).toFixed(2);
@@ -251,10 +410,16 @@
     }
 
     async function run(){
+      // Validate inputs before running
+      if(!validateAllFields()){
+        setStatus('err', 'Invalid inputs');
+        return;
+      }
       const base = API.value.replace(/\/$/,'');
       const endpoint = EP.value;
       epdisp.textContent = '/' + endpoint;
       setStatus('warn','running…');
+      setLoading(true);
       http.textContent = '—';
       latency.textContent = '—';
 
@@ -302,21 +467,58 @@
         http.textContent = res.status + ' ' + res.statusText;
         latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
 
-        try{ out.textContent = JSON.stringify(JSON.parse(txt), null, 2); }
+        try{
+          out.textContent = JSON.stringify(JSON.parse(txt), null, 2);
+          out.parentElement.classList.add('fade-in');
+        }
         catch{ out.textContent = txt; }
 
-        setStatus(res.ok ? 'ok' : 'err', res.ok ? 'ok' : 'error');
+        if(res.ok){
+          setStatus('ok', 'success');
+        } else {
+          setStatus('err', `HTTP ${res.status} error`);
+          // Try to parse error message
+          try{
+            const errData = JSON.parse(txt);
+            if(errData.error || errData.message){
+              out.textContent = JSON.stringify(errData, null, 2);
+            }
+          }catch{}
+        }
       }catch(e){
         const t1 = performance.now();
         latency.textContent = Math.max(0, t1 - t0).toFixed(0) + ' ms';
-        http.textContent = 'network error';
-        out.textContent = String(e);
-        setStatus('err','error');
+        http.textContent = 'Network error';
+
+        let errorMsg = 'Network request failed. ';
+        if(e.message.includes('Failed to fetch')){
+          errorMsg += 'Check your internet connection or API URL.';
+        } else {
+          errorMsg += e.message;
+        }
+        out.textContent = errorMsg;
+        setStatus('err','Network error');
+      } finally {
+        setLoading(false);
       }
     }
 
     btnRun.addEventListener('click', run);
     btnSample.addEventListener('click', sample);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Enter or Ctrl+Enter to run
+      if((e.key === 'Enter' && e.ctrlKey) || (e.key === 'Enter' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT')){
+        e.preventDefault();
+        if(!btnRun.disabled) run();
+      }
+      // Escape to clear errors
+      if(e.key === 'Escape'){
+        clearAllErrors();
+        setStatus('muted', 'idle');
+      }
+    });
   </script>
 </body>
 </html>
