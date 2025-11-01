@@ -989,7 +989,7 @@
     function buildCurve(fields, tenors){
       const curve = {};
       tenors.forEach(tenor => {
-        const fieldKey = `curve${tenor.replace(/[MY]/g, '').toLowerCase()}`;
+        const fieldKey = `curve${tenor.toLowerCase()}`;
         if(fields[fieldKey]){
           // Convert percentage to decimal
           curve[tenor] = pctToDecimal(fields[fieldKey].value);
