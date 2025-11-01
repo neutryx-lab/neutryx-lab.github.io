@@ -143,7 +143,16 @@
     /* Percentage input styling */
     .pct-input{position:relative}
     .pct-input input{padding-right:30px}
+    .pct-input-wrapper{position:relative;display:inline-block;width:100%}
     .pct-symbol{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    /* Toggle switch for frequency */
+    .freq-toggle{display:flex;gap:0;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--bg)}
+    .freq-option{flex:1;padding:10px 12px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.9rem;font-weight:500}
+    .freq-option.active{background:var(--brand);color:#fff}
+    .freq-option:hover:not(.active){background:rgba(10,102,194,.1);color:var(--brand)}
+    @media (max-width:640px){
+      .freq-option{padding:12px;font-size:.95rem}
+    }
     /* Mobile-friendly input fields */
     @media (max-width:640px){
       input,select{font-size:16px;padding:12px}
@@ -217,22 +226,6 @@
       <strong>License:</strong> Permissive open‑source (e.g., MIT/BSD). No confidential learning logic is included here.
     </section>
 
-    <!-- API URL Configuration -->
-    <section class="card" style="margin-bottom:20px">
-      <div class="section">
-        <div class="api-config-row">
-          <div class="field">
-            <label for="api-url">API Base URL</label>
-            <input id="api-url" type="text" value="https://neutryx-api.onrender.com" placeholder="https://neutryx-api.onrender.com" />
-          </div>
-          <div class="field">
-            <label class="desktop-only">&nbsp;</label>
-            <button id="btnTest" class="btn ghost" type="button">Test Connection</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- DEMO GRID -->
     <section class="grid" style="grid-template-columns:repeat(12,1fr);gap:18px">
       <!-- Left: Inputs -->
@@ -264,23 +257,25 @@
                   </select>
                 </div>
                 <div class="field" id="field-pv-notional" style="margin-bottom:12px">
-                  <label for="pv-notional">Notional (USD)</label>
+                  <label for="pv-notional">Notional</label>
                   <input id="pv-notional" type="text" value="10,000,000" />
                   <div class="error-msg"></div>
                 </div>
-                <div class="field pct-input" id="field-pv-fixed-rate" style="margin-bottom:12px">
+                <div class="field" id="field-pv-fixed-rate" style="margin-bottom:12px">
                   <label for="pv-fixed-rate">Fixed Rate</label>
-                  <input id="pv-fixed-rate" type="number" value="2.4" step="0.1" />
-                  <span class="pct-symbol">%</span>
+                  <div class="pct-input-wrapper">
+                    <input id="pv-fixed-rate" type="number" value="2.4" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
                   <div class="error-msg"></div>
                 </div>
                 <div class="field" id="field-pv-pay-freq" style="margin-bottom:12px">
-                  <label for="pv-pay-freq">Pay Freq (months)</label>
-                  <select id="pv-pay-freq">
-                    <option value="6">6 (Semi-annual)</option>
-                    <option value="12">12 (Annual)</option>
-                    <option value="3">3 (Quarterly)</option>
-                  </select>
+                  <label for="pv-pay-freq">Pay Freq</label>
+                  <div class="freq-toggle">
+                    <button type="button" class="freq-option" data-freq="3">3M</button>
+                    <button type="button" class="freq-option active" data-freq="6">6M</button>
+                    <button type="button" class="freq-option" data-freq="12">12M</button>
+                  </div>
                 </div>
                 <div class="field" id="field-pv-maturity" style="margin-bottom:12px">
                   <label for="pv-maturity">Maturity (years)</label>
@@ -293,35 +288,47 @@
               <div class="col-section">
                 <div class="section-header">Zero Rate Curve</div>
                 <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="field pct-input" id="field-pv-curve-1m" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-1m" style="margin-bottom:12px">
                     <label for="pv-curve-1m">1M</label>
-                    <input id="pv-curve-1m" type="number" value="0.5" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-1m" type="number" value="0.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-pv-curve-3m" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-3m" style="margin-bottom:12px">
                     <label for="pv-curve-3m">3M</label>
-                    <input id="pv-curve-3m" type="number" value="0.7" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-3m" type="number" value="0.7" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-pv-curve-6m" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-6m" style="margin-bottom:12px">
                     <label for="pv-curve-6m">6M</label>
-                    <input id="pv-curve-6m" type="number" value="0.9" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-6m" type="number" value="0.9" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-pv-curve-1y" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-1y" style="margin-bottom:12px">
                     <label for="pv-curve-1y">1Y</label>
-                    <input id="pv-curve-1y" type="number" value="1.1" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-1y" type="number" value="1.1" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-pv-curve-2y" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-2y" style="margin-bottom:12px">
                     <label for="pv-curve-2y">2Y</label>
-                    <input id="pv-curve-2y" type="number" value="1.5" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-2y" type="number" value="1.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-pv-curve-5y" style="margin-bottom:12px">
+                  <div class="field" id="field-pv-curve-5y" style="margin-bottom:12px">
                     <label for="pv-curve-5y">5Y</label>
-                    <input id="pv-curve-5y" type="number" value="2.2" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="pv-curve-5y" type="number" value="2.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -342,23 +349,25 @@
                   </select>
                 </div>
                 <div class="field" id="field-risk-notional" style="margin-bottom:12px">
-                  <label for="risk-notional">Notional (USD)</label>
+                  <label for="risk-notional">Notional</label>
                   <input id="risk-notional" type="text" value="10,000,000" />
                   <div class="error-msg"></div>
                 </div>
-                <div class="field pct-input" id="field-risk-fixed-rate" style="margin-bottom:12px">
+                <div class="field" id="field-risk-fixed-rate" style="margin-bottom:12px">
                   <label for="risk-fixed-rate">Fixed Rate</label>
-                  <input id="risk-fixed-rate" type="number" value="2.4" step="0.1" />
-                  <span class="pct-symbol">%</span>
+                  <div class="pct-input-wrapper">
+                    <input id="risk-fixed-rate" type="number" value="2.4" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
                   <div class="error-msg"></div>
                 </div>
                 <div class="field" id="field-risk-pay-freq" style="margin-bottom:12px">
-                  <label for="risk-pay-freq">Pay Freq (months)</label>
-                  <select id="risk-pay-freq">
-                    <option value="6">6 (Semi-annual)</option>
-                    <option value="12">12 (Annual)</option>
-                    <option value="3">3 (Quarterly)</option>
-                  </select>
+                  <label for="risk-pay-freq">Pay Freq</label>
+                  <div class="freq-toggle">
+                    <button type="button" class="freq-option" data-freq="3">3M</button>
+                    <button type="button" class="freq-option active" data-freq="6">6M</button>
+                    <button type="button" class="freq-option" data-freq="12">12M</button>
+                  </div>
                 </div>
                 <div class="field" id="field-risk-maturity" style="margin-bottom:12px">
                   <label for="risk-maturity">Maturity (years)</label>
@@ -376,35 +385,47 @@
               <div class="col-section">
                 <div class="section-header">Zero Rate Curve</div>
                 <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="field pct-input" id="field-risk-curve-1m" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-1m" style="margin-bottom:12px">
                     <label for="risk-curve-1m">1M</label>
-                    <input id="risk-curve-1m" type="number" value="0.5" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-1m" type="number" value="0.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-risk-curve-3m" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-3m" style="margin-bottom:12px">
                     <label for="risk-curve-3m">3M</label>
-                    <input id="risk-curve-3m" type="number" value="0.7" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-3m" type="number" value="0.7" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-risk-curve-6m" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-6m" style="margin-bottom:12px">
                     <label for="risk-curve-6m">6M</label>
-                    <input id="risk-curve-6m" type="number" value="0.9" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-6m" type="number" value="0.9" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-risk-curve-1y" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-1y" style="margin-bottom:12px">
                     <label for="risk-curve-1y">1Y</label>
-                    <input id="risk-curve-1y" type="number" value="1.1" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-1y" type="number" value="1.1" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-risk-curve-2y" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-2y" style="margin-bottom:12px">
                     <label for="risk-curve-2y">2Y</label>
-                    <input id="risk-curve-2y" type="number" value="1.5" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-2y" type="number" value="1.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" id="field-risk-curve-5y" style="margin-bottom:12px">
+                  <div class="field" id="field-risk-curve-5y" style="margin-bottom:12px">
                     <label for="risk-curve-5y">5Y</label>
-                    <input id="risk-curve-5y" type="number" value="2.2" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="risk-curve-5y" type="number" value="2.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -425,23 +446,25 @@
                   </select>
                 </div>
                 <div class="field" id="field-xva-notional" style="margin-bottom:12px">
-                  <label for="xva-notional">Notional (USD)</label>
+                  <label for="xva-notional">Notional</label>
                   <input id="xva-notional" type="text" value="10,000,000" />
                   <div class="error-msg"></div>
                 </div>
-                <div class="field pct-input" id="field-xva-fixed-rate" style="margin-bottom:12px">
+                <div class="field" id="field-xva-fixed-rate" style="margin-bottom:12px">
                   <label for="xva-fixed-rate">Fixed Rate</label>
-                  <input id="xva-fixed-rate" type="number" value="2.4" step="0.1" />
-                  <span class="pct-symbol">%</span>
+                  <div class="pct-input-wrapper">
+                    <input id="xva-fixed-rate" type="number" value="2.4" step="0.1" />
+                    <span class="pct-symbol">%</span>
+                  </div>
                   <div class="error-msg"></div>
                 </div>
                 <div class="field" id="field-xva-pay-freq" style="margin-bottom:12px">
-                  <label for="xva-pay-freq">Pay Freq (months)</label>
-                  <select id="xva-pay-freq">
-                    <option value="6">6 (Semi-annual)</option>
-                    <option value="12">12 (Annual)</option>
-                    <option value="3">3 (Quarterly)</option>
-                  </select>
+                  <label for="xva-pay-freq">Pay Freq</label>
+                  <div class="freq-toggle">
+                    <button type="button" class="freq-option" data-freq="3">3M</button>
+                    <button type="button" class="freq-option active" data-freq="6">6M</button>
+                    <button type="button" class="freq-option" data-freq="12">12M</button>
+                  </div>
                 </div>
                 <div class="field" id="field-xva-maturity" style="margin-bottom:12px">
                   <label for="xva-maturity">Maturity (years)</label>
@@ -454,57 +477,75 @@
               <div class="col-section">
                 <div class="section-header">Zero Rate Curve</div>
                 <div class="row" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
-                  <div class="field pct-input" style="margin-bottom:12px">
+                  <div class="field" style="margin-bottom:12px">
                     <label for="xva-curve-1m">1M</label>
-                    <input id="xva-curve-1m" type="number" value="0.5" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-curve-1m" type="number" value="0.5" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" style="margin-bottom:12px">
+                  <div class="field" style="margin-bottom:12px">
                     <label for="xva-curve-1y">1Y</label>
-                    <input id="xva-curve-1y" type="number" value="1.1" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-curve-1y" type="number" value="1.1" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" style="margin-bottom:12px">
+                  <div class="field" style="margin-bottom:12px">
                     <label for="xva-curve-5y">5Y</label>
-                    <input id="xva-curve-5y" type="number" value="2.2" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-curve-5y" type="number" value="2.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
-                  <div class="field pct-input" style="margin-bottom:12px">
+                  <div class="field" style="margin-bottom:12px">
                     <label for="xva-curve-10y">10Y</label>
-                    <input id="xva-curve-10y" type="number" value="2.6" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-curve-10y" type="number" value="2.6" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                   </div>
                 </div>
                 <div class="section-header" style="margin-top:8px">XVA Parameters</div>
                 <div class="row" style="grid-template-columns:repeat(2,1fr)">
-                  <div class="field pct-input" id="field-xva-lgd-cp" style="margin-bottom:12px">
+                  <div class="field" id="field-xva-lgd-cp" style="margin-bottom:12px">
                     <label for="xva-lgd-cp">LGD CP</label>
-                    <input id="xva-lgd-cp" type="number" value="60" step="5" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-lgd-cp" type="number" value="60" step="5" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                     <div class="error-msg"></div>
                   </div>
-                  <div class="field pct-input" id="field-xva-lgd-own" style="margin-bottom:12px">
+                  <div class="field" id="field-xva-lgd-own" style="margin-bottom:12px">
                     <label for="xva-lgd-own">LGD Own</label>
-                    <input id="xva-lgd-own" type="number" value="60" step="5" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-lgd-own" type="number" value="60" step="5" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                     <div class="error-msg"></div>
                   </div>
-                  <div class="field pct-input" id="field-xva-funding" style="margin-bottom:12px">
+                  <div class="field" id="field-xva-funding" style="margin-bottom:12px">
                     <label for="xva-funding">Funding Spread</label>
-                    <input id="xva-funding" type="number" value="0.2" step="0.1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-funding" type="number" value="0.2" step="0.1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                     <div class="error-msg"></div>
                   </div>
-                  <div class="field pct-input" id="field-xva-coc" style="margin-bottom:12px">
+                  <div class="field" id="field-xva-coc" style="margin-bottom:12px">
                     <label for="xva-coc">Cost of Capital</label>
-                    <input id="xva-coc" type="number" value="10" step="1" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-coc" type="number" value="10" step="1" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                     <div class="error-msg"></div>
                   </div>
-                  <div class="field pct-input" id="field-xva-cap-factor" style="margin-bottom:12px">
+                  <div class="field" id="field-xva-cap-factor" style="margin-bottom:12px">
                     <label for="xva-cap-factor">Capital Factor</label>
-                    <input id="xva-cap-factor" type="number" value="50" step="5" />
-                    <span class="pct-symbol">%</span>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-cap-factor" type="number" value="50" step="5" />
+                      <span class="pct-symbol">%</span>
+                    </div>
                     <div class="error-msg"></div>
                   </div>
                   <div class="field" id="field-xva-grid" style="margin-bottom:12px">
@@ -521,40 +562,52 @@
                 <div style="margin-bottom:14px">
                   <div class="small mutetext" style="margin-bottom:8px">Counterparty:</div>
                   <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-cp-1y">1Y</label>
-                      <input id="xva-haz-cp-1y" type="number" value="1.0" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-cp-1y" type="number" value="1.0" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-cp-5y">5Y</label>
-                      <input id="xva-haz-cp-5y" type="number" value="1.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-cp-5y" type="number" value="1.2" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-cp-10y">10Y</label>
-                      <input id="xva-haz-cp-10y" type="number" value="1.5" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-cp-10y" type="number" value="1.5" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div>
                   <div class="small mutetext" style="margin-bottom:8px">Own:</div>
                   <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-own-1y">1Y</label>
-                      <input id="xva-haz-own-1y" type="number" value="0.8" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-own-1y" type="number" value="0.8" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-own-5y">5Y</label>
-                      <input id="xva-haz-own-5y" type="number" value="1.0" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-own-5y" type="number" value="1.0" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
-                    <div class="field pct-input" style="margin-bottom:12px">
+                    <div class="field" style="margin-bottom:12px">
                       <label for="xva-haz-own-10y">10Y</label>
-                      <input id="xva-haz-own-10y" type="number" value="1.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <div class="pct-input-wrapper">
+                        <input id="xva-haz-own-10y" type="number" value="1.2" step="0.1" />
+                        <span class="pct-symbol">%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -653,9 +706,8 @@
     // Current active tab
     let activeTab = 'pv';
 
-    // API URL field
-    const apiUrl = $('#api-url');
-    const btnTest = $('#btnTest');
+    // API URL (hardcoded)
+    const API_BASE_URL = 'https://neutryx-api.onrender.com';
 
     // Engine toggles (common)
     const engineToggles = {
@@ -664,12 +716,16 @@
       useAad: $('#use-aad')
     };
 
+    // Pay frequency values (for all tabs)
+    let pvPayFreq = 6;
+    let riskPayFreq = 6;
+    let xvaPayFreq = 6;
+
     // Field references by tab
     const pvFields = {
       type: $('#pv-type'),
       notional: $('#pv-notional'),
       fixedRate: $('#pv-fixed-rate'),
-      payFreq: $('#pv-pay-freq'),
       maturity: $('#pv-maturity'),
       curve1m: $('#pv-curve-1m'),
       curve3m: $('#pv-curve-3m'),
@@ -683,7 +739,6 @@
       type: $('#risk-type'),
       notional: $('#risk-notional'),
       fixedRate: $('#risk-fixed-rate'),
-      payFreq: $('#risk-pay-freq'),
       maturity: $('#risk-maturity'),
       bumpBp: $('#risk-bump-bp'),
       curve1m: $('#risk-curve-1m'),
@@ -698,7 +753,6 @@
       type: $('#xva-type'),
       notional: $('#xva-notional'),
       fixedRate: $('#xva-fixed-rate'),
-      payFreq: $('#xva-pay-freq'),
       maturity: $('#xva-maturity'),
       curve1m: $('#xva-curve-1m'),
       curve1y: $('#xva-curve-1y'),
@@ -772,6 +826,27 @@
       });
     });
 
+    // Add frequency toggle listeners
+    $$('.freq-toggle').forEach(toggle => {
+      const buttons = toggle.querySelectorAll('.freq-option');
+      const tabId = toggle.closest('.tab-content').id;
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active from all buttons in this toggle
+          buttons.forEach(b => b.classList.remove('active'));
+          // Add active to clicked button
+          btn.classList.add('active');
+
+          // Update the corresponding frequency variable
+          const freq = parseInt(btn.getAttribute('data-freq'));
+          if(tabId === 'pv-content') pvPayFreq = freq;
+          else if(tabId === 'risk-content') riskPayFreq = freq;
+          else if(tabId === 'xva-content') xvaPayFreq = freq;
+        });
+      });
+    });
+
     // Validation functions
     function showFieldError(fieldId, message){
       const fieldEl = $(`#field-${fieldId}`);
@@ -841,9 +916,10 @@
 
       // Additional validation: Maturity must be multiple of Pay Freq
       let fields = activeTab === 'pv' ? pvFields : (activeTab === 'risk' ? riskFields : xvaFields);
-      if(fields.maturity && fields.payFreq){
+      let payFreqMonths = activeTab === 'pv' ? pvPayFreq : (activeTab === 'risk' ? riskPayFreq : xvaPayFreq);
+
+      if(fields.maturity){
         const maturity = parseFloat(fields.maturity.value);
-        const payFreqMonths = parseInt(fields.payFreq.value);
         const maturityMonths = maturity * 12;
 
         if(maturityMonths % payFreqMonths !== 0){
@@ -923,12 +999,12 @@
     }
 
     // Build swap request object
-    function buildSwapRequest(fields, includeCurve = true){
+    function buildSwapRequest(fields, payFreqMonths, includeCurve = true){
       const swap = {
         notional: parseNotional(fields.notional.value),
         fixed_rate: pctToDecimal(fields.fixedRate.value),
         maturity_years: parseFloat(fields.maturity.value),
-        pay_freq_months: parseInt(fields.payFreq.value),
+        pay_freq_months: payFreqMonths,
         pay_fixed: fields.type ? fields.type.value === 'true' : true
       };
 
@@ -1037,7 +1113,7 @@
         setStatus('err', 'Invalid inputs');
         return;
       }
-      const base = apiUrl.value.replace(/\/$/,'');
+      const base = API_BASE_URL;
 
       // Determine endpoint based on active tab
       let endpoint;
@@ -1046,19 +1122,19 @@
       if(activeTab === 'pv'){
         endpoint = 'swap/price';
         requestBody = {
-          swap: buildSwapRequest(pvFields, true),
+          swap: buildSwapRequest(pvFields, pvPayFreq, true),
           engine: buildEngineToggles()
         };
       } else if(activeTab === 'risk'){
         endpoint = 'swap/risks';
         requestBody = {
-          swap: buildSwapRequest(riskFields, true),
+          swap: buildSwapRequest(riskFields, riskPayFreq, true),
           engine: buildEngineToggles(),
           bump_bp: parseFloat(riskFields.bumpBp.value)
         };
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
-        const xvaSwap = buildSwapRequest(xvaFields, false);
+        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, false);
         // Add XVA-specific curve (convert percentage to decimal)
         xvaSwap.curve = {
           '1M': pctToDecimal(xvaFields.curve1m.value),
@@ -1150,39 +1226,32 @@
       }
     }
 
-    // Test API connection
+    // Test API connection (silent, no popup)
     async function testConnection(){
-      const base = apiUrl.value.replace(/\/$/,'');
       setStatus('warn', 'testing…');
-      btnTest.disabled = true;
-      btnTest.innerHTML = '<span class="spinner"></span> Testing...';
 
       try{
-        const res = await fetch(`${base}/`);
+        const res = await fetch(`${API_BASE_URL}/`);
         const data = await res.json();
 
         if(res.ok && data.status === 'ok'){
-          setStatus('ok', 'API connected');
-          alert('✓ API connection successful!\n\n' + JSON.stringify(data, null, 2));
+          setStatus('ok', 'API ready');
         } else {
           setStatus('err', 'API error');
-          alert('✗ API returned unexpected response:\n\n' + JSON.stringify(data, null, 2));
         }
       }catch(e){
-        setStatus('err', 'connection failed');
-        alert('✗ Connection failed:\n\n' + e.message);
-      }finally{
-        btnTest.disabled = false;
-        btnTest.textContent = 'Test Connection';
+        setStatus('err', 'API offline');
       }
     }
 
     btnRun.addEventListener('click', run);
     btnSample.addEventListener('click', sample);
-    btnTest.addEventListener('click', testConnection);
 
     // Initialize endpoint display
     switchTab('pv');
+
+    // Auto-test API connection on page load
+    testConnection();
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
