@@ -197,6 +197,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="assets/config.js"></script>
 </head>
 <body>
   <header>
@@ -527,8 +528,61 @@
     // Current active tab
     let activeTab = 'pv';
 
-    // API URL (hardcoded)
-    const API_BASE_URL = 'https://neutryx-api.onrender.com';
+    // API URL (from config.js)
+    const API_BASE_URL = CONFIG.API_BASE_URL;
+
+    /**
+     * Fetch with timeout and debug logging
+     * @param {string} url - The URL to fetch
+     * @param {object} options - Fetch options
+     * @param {number} timeout - Timeout in milliseconds (default: CONFIG.API_TIMEOUT)
+     * @returns {Promise<Response>}
+     */
+    async function fetchWithTimeout(url, options = {}, timeout = CONFIG.API_TIMEOUT) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      if (CONFIG.ENABLE_DEBUG) {
+        console.log('[API Request]', {
+          url,
+          method: options.method || 'GET',
+          headers: options.headers,
+          body: options.body ? JSON.parse(options.body) : null,
+          timeout
+        });
+      }
+
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+
+        if (CONFIG.ENABLE_DEBUG) {
+          console.log('[API Response]', {
+            url,
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok
+          });
+        }
+
+        return response;
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          if (CONFIG.ENABLE_DEBUG) {
+            console.error('[API Timeout]', { url, timeout });
+          }
+          throw new Error(`Request timeout after ${timeout}ms`);
+        }
+        if (CONFIG.ENABLE_DEBUG) {
+          console.error('[API Error]', { url, error: error.message });
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
 
     // Shared pay frequency and type (single set for all calculation types)
     let sharedPayFreq = 6;
@@ -1041,18 +1095,22 @@
       const engines = Array.isArray(data) ? data : [data];
 
       // DEBUG: Log the baseline structure to see what fields are available
-      console.log('=== Risk Results Debug ===');
-      console.log('Baseline object:', baseline);
-      console.log('Available keys:', Object.keys(baseline));
+      if (CONFIG.ENABLE_DEBUG) {
+        console.log('=== Risk Results Debug ===');
+        console.log('Baseline object:', baseline);
+        console.log('Available keys:', Object.keys(baseline));
+      }
 
       // Extract DV01 and bucketed risks
       // API returns: dv01_parallel (total) and bucket_pv01 (bucketed)
       const dv01 = baseline.dv01_parallel || baseline.dv01 || baseline.total_dv01 || 0;
       const bucketedRisks = baseline.bucket_pv01 || baseline.bucketed_dv01 || baseline.bucketed_risks || baseline.risks || {};
 
-      console.log('Extracted dv01:', dv01);
-      console.log('Extracted bucketedRisks:', bucketedRisks);
-      console.log('========================');
+      if (CONFIG.ENABLE_DEBUG) {
+        console.log('Extracted dv01:', dv01);
+        console.log('Extracted bucketedRisks:', bucketedRisks);
+        console.log('========================');
+      }
 
       let html = `
         <div class="field" style="margin-bottom:12px">
@@ -1118,14 +1176,16 @@
       const engines = Array.isArray(data) ? data : [data];
 
       // DEBUG: Log the baseline structure to see what fields are available
-      console.log('=== XVA Results Debug ===');
-      console.log('Baseline object:', baseline);
-      console.log('Available keys:', Object.keys(baseline));
-      console.log('CVA (uppercase):', baseline.CVA);
-      console.log('DVA (uppercase):', baseline.DVA);
-      console.log('FVA (uppercase):', baseline.FVA);
-      console.log('KVA (uppercase):', baseline.KVA);
-      console.log('========================');
+      if (CONFIG.ENABLE_DEBUG) {
+        console.log('=== XVA Results Debug ===');
+        console.log('Baseline object:', baseline);
+        console.log('Available keys:', Object.keys(baseline));
+        console.log('CVA (uppercase):', baseline.CVA);
+        console.log('DVA (uppercase):', baseline.DVA);
+        console.log('FVA (uppercase):', baseline.FVA);
+        console.log('KVA (uppercase):', baseline.KVA);
+        console.log('========================');
+      }
 
       // API returns fields in uppercase: CVA, DVA, FVA, KVA
       const cva = baseline.CVA || baseline.cva || 0;
@@ -1387,7 +1447,7 @@
         // Send single request without engine config - API will run all engine configurations
         reqbox.textContent = JSON.stringify(baseRequestBody, null, 2);
 
-        const res = await fetch(url, {
+        const res = await fetchWithTimeout(url, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(baseRequestBody)
@@ -1399,11 +1459,13 @@
           const raw = JSON.parse(txt);
 
           // DEBUG: Log raw API response structure
-          console.log('=== Raw API Response ===');
-          console.log('Endpoint:', endpoint);
-          console.log('Response keys:', Object.keys(raw));
-          console.log('Full response:', raw);
-          console.log('========================');
+          if (CONFIG.ENABLE_DEBUG) {
+            console.log('=== Raw API Response ===');
+            console.log('Endpoint:', endpoint);
+            console.log('Response keys:', Object.keys(raw));
+            console.log('Full response:', raw);
+            console.log('========================');
+          }
 
           // Extract results from API response
           // API returns: {baseline: {result: {...}, time_sec: ...}, ...}
@@ -1514,7 +1576,7 @@
 
         reqbox.textContent = JSON.stringify(requestBody, null, 2);
 
-        const res = await fetch(url, {
+        const res = await fetchWithTimeout(url, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(requestBody)
@@ -1526,10 +1588,12 @@
           const raw = JSON.parse(txt);
 
           // DEBUG: Log raw API response structure
-          console.log('=== Raw XVA MC Response ===');
-          console.log('Response keys:', Object.keys(raw));
-          console.log('Full response:', raw);
-          console.log('========================');
+          if (CONFIG.ENABLE_DEBUG) {
+            console.log('=== Raw XVA MC Response ===');
+            console.log('Response keys:', Object.keys(raw));
+            console.log('Full response:', raw);
+            console.log('========================');
+          }
 
           // XVA Risks endpoint returns a single result (not 3 engines)
           // Response structure: { input: {...}, result: {...}, time_sec: ... }
@@ -1576,7 +1640,7 @@
       setStatus('warn', 'connecting…');
 
       try{
-        const res = await fetch(`${API_BASE_URL}/`);
+        const res = await fetchWithTimeout(`${API_BASE_URL}/`);
         const data = await res.json();
 
         if(res.ok && data.status === 'ok'){
