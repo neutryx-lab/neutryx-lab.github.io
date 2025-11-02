@@ -196,6 +196,7 @@
       .results-header{flex-direction:column;align-items:flex-start}
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <header>
@@ -1028,6 +1029,126 @@
       });
     });
 
+    // Draw XVA exposure chart
+    let xvaChart = null; // Store chart instance for cleanup
+
+    function drawXVAExposureChart(baseline){
+      const canvas = $('#xva-exposure-chart');
+      if(!canvas) return;
+
+      // Destroy previous chart if exists
+      if(xvaChart){
+        xvaChart.destroy();
+      }
+
+      const ctx = canvas.getContext('2d');
+
+      xvaChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: baseline.grid_times,
+          datasets: [
+            {
+              label: 'EPE (Expected Positive Exposure)',
+              data: baseline.EPE,
+              borderColor: 'rgb(10, 102, 194)',
+              backgroundColor: 'rgba(10, 102, 194, 0.1)',
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              tension: 0.1,
+              fill: true
+            },
+            {
+              label: 'ENE (Expected Negative Exposure)',
+              data: baseline.ENE,
+              borderColor: 'rgb(217, 48, 37)',
+              backgroundColor: 'rgba(217, 48, 37, 0.1)',
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              tension: 0.1,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                padding: 15,
+                font: {
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              padding: 12,
+              titleFont: {
+                size: 13
+              },
+              bodyFont: {
+                size: 12
+              },
+              callbacks: {
+                title: function(context) {
+                  return `Time: ${context[0].parsed.x.toFixed(2)} years`;
+                },
+                label: function(context) {
+                  const label = context.dataset.label || '';
+                  const value = context.parsed.y;
+                  return `${label}: ${formatNotional(Math.round(value))}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time (Years)',
+                font: {
+                  size: 12,
+                  weight: '600'
+                }
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Exposure',
+                font: {
+                  size: 12,
+                  weight: '600'
+                }
+              },
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return formatNotional(value);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
     // Display parsed results in a formatted way
     function displayParsedResults(data){
       const container = $('#parsed-results');
@@ -1047,6 +1168,14 @@
       }
 
       container.innerHTML = html;
+
+      // Draw XVA exposure chart if available
+      if(activeTab === 'xva' && data){
+        const baseline = Array.isArray(data) ? data[0] : data;
+        if(baseline.EPE && baseline.ENE && baseline.grid_times){
+          drawXVAExposureChart(baseline);
+        }
+      }
     }
 
     // Format PV results
@@ -1211,6 +1340,18 @@
           </div>
         </div>
       `;
+
+      // Add exposure chart if EPE/ENE data is available
+      if(baseline.EPE && baseline.ENE && baseline.grid_times){
+        html += `
+          <div class="field" style="margin-bottom:16px">
+            <label>Exposure Profile (EPE / ENE)</label>
+            <div style="margin-top:12px;background:#fff;padding:16px;border-radius:8px;border:1px solid var(--border)">
+              <canvas id="xva-exposure-chart" style="max-height:300px"></canvas>
+            </div>
+          </div>
+        `;
+      }
 
       // Display computation times for all engines
       if(Array.isArray(data) && data.length > 1){
