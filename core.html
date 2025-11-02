@@ -1065,17 +1065,39 @@
       const baseline = Array.isArray(data) ? data[0] : data;
       const engines = Array.isArray(data) ? data : [data];
 
+      // Extract DV01 and bucketed risks
+      const dv01 = baseline.dv01 || baseline.total_dv01 || 0;
+      const bucketedRisks = baseline.bucketed_dv01 || baseline.bucketed_risks || baseline.risks || {};
+
       let html = `
         <div class="field" style="margin-bottom:12px">
-          <label>DV01</label>
-          <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(baseline.dv01 || 0))}</div>
+          <label>Total DV01</label>
+          <div style="font-size:1.4em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(dv01))}</div>
         </div>
       `;
 
-      if(baseline.bucketed_dv01){
-        html += '<div class="field" style="margin-bottom:12px"><label>Bucketed DV01</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.9em">';
-        for(const [tenor, value] of Object.entries(baseline.bucketed_dv01)){
-          html += `<div><span style="color:var(--muted)">${tenor}:</span> <strong>${Math.round(value).toLocaleString()}</strong></div>`;
+      // Display grid-level (bucketed) risks
+      if(Object.keys(bucketedRisks).length > 0){
+        html += '<div class="field" style="margin-bottom:12px">';
+        html += '<label>Bucketed DV01 (Grid Risks)</label>';
+        html += '<div class="bucketed-risks-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;font-size:0.9em;margin-top:8px">';
+
+        // Sort tenors for better display
+        const sortedTenors = Object.keys(bucketedRisks).sort((a, b) => {
+          const getMonths = (tenor) => {
+            if(tenor.includes('M')) return parseInt(tenor);
+            if(tenor.includes('Y')) return parseInt(tenor) * 12;
+            return 0;
+          };
+          return getMonths(a) - getMonths(b);
+        });
+
+        for(const tenor of sortedTenors){
+          const value = bucketedRisks[tenor];
+          html += `<div style="padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:8px">`;
+          html += `<span style="color:var(--muted);font-size:0.85em">${tenor}:</span><br>`;
+          html += `<strong style="color:var(--brand)">${Math.round(value).toLocaleString()}</strong>`;
+          html += `</div>`;
         }
         html += '</div></div>';
       }
