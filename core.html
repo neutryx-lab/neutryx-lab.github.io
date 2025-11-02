@@ -547,8 +547,8 @@
                   <div class="field" id="field-xva-funding" style="margin-bottom:12px">
                     <label for="xva-funding">Funding Spread</label>
                     <div class="pct-input-wrapper">
-                      <input id="xva-funding" type="number" value="0.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
+                      <input id="xva-funding" type="number" value="20" step="1" />
+                      <span class="pct-symbol">bp</span>
                     </div>
                     <div class="error-msg"></div>
                   </div>
@@ -565,6 +565,14 @@
                     <div class="pct-input-wrapper">
                       <input id="xva-cap-factor" type="number" value="50" step="5" />
                       <span class="pct-symbol">%</span>
+                    </div>
+                    <div class="error-msg"></div>
+                  </div>
+                  <div class="field" id="field-xva-sim-vol" style="margin-bottom:12px">
+                    <label for="xva-sim-vol">Simulation Vol (Normal)</label>
+                    <div class="pct-input-wrapper">
+                      <input id="xva-sim-vol" type="number" value="50" step="5" />
+                      <span class="pct-symbol">bp</span>
                     </div>
                     <div class="error-msg"></div>
                   </div>
@@ -751,6 +759,7 @@
       funding: $('#xva-funding'),
       coc: $('#xva-coc'),
       capFactor: $('#xva-cap-factor'),
+      simVol: $('#xva-sim-vol'),
       hazCp1y: $('#xva-haz-cp-1y'),
       hazCp5y: $('#xva-haz-cp-5y'),
       hazCp10y: $('#xva-haz-cp-10y'),
@@ -968,6 +977,11 @@
     // Round to 8 decimal places to avoid floating point precision issues
     function pctToDecimal(pct){
       return parseFloat((parseFloat(pct) / 100).toFixed(8));
+    }
+
+    // Helper: Convert basis points to decimal (50bp → 0.005)
+    function bpToDecimal(bp){
+      return parseFloat((parseFloat(bp) / 10000).toFixed(8));
     }
 
     // Helper: Convert decimal to percentage (0.024 → 2.4)
@@ -1497,7 +1511,7 @@
               '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
               '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
             },
-            funding_spread: pctToDecimal(xvaFields.funding.value),
+            funding_spread: bpToDecimal(xvaFields.funding.value),
             cost_of_capital: pctToDecimal(xvaFields.coc.value),
             capital_factor: pctToDecimal(xvaFields.capFactor.value),
             grid_months: 3  // Fixed value for time grid spacing
@@ -1624,11 +1638,11 @@
             '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
             '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
           },
-          funding_spread: pctToDecimal(xvaFields.funding.value),
+          funding_spread: bpToDecimal(xvaFields.funding.value),
           cost_of_capital: pctToDecimal(xvaFields.coc.value),
           capital_factor: pctToDecimal(xvaFields.capFactor.value),
           grid_months: 3,  // Fixed value
-          normal_vol: 0.005,  // Fixed volatility parameter for MC
+          normal_vol: bpToDecimal(xvaFields.simVol.value),  // Simulation volatility from user input
           n_paths: 200  // Fixed number of Monte Carlo paths
         }
       };
