@@ -922,8 +922,9 @@
     }
 
     // Helper: Convert percentage to decimal (2.4% → 0.024)
+    // Round to 8 decimal places to avoid floating point precision issues
     function pctToDecimal(pct){
-      return parseFloat(pct) / 100;
+      return parseFloat((parseFloat(pct) / 100).toFixed(8));
     }
 
     // Helper: Convert decimal to percentage (0.024 → 2.4)
