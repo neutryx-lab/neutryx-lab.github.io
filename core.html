@@ -1043,13 +1043,16 @@
 
       const ctx = canvas.getContext('2d');
 
+      // Convert ENE to negative values for display
+      const negativeENE = baseline.ENE.map(v => -v);
+
       xvaChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: baseline.grid_times,
           datasets: [
             {
-              label: 'EPE (Expected Positive Exposure)',
+              label: 'EPE',
               data: baseline.EPE,
               borderColor: 'rgb(10, 102, 194)',
               backgroundColor: 'rgba(10, 102, 194, 0.1)',
@@ -1060,8 +1063,8 @@
               fill: true
             },
             {
-              label: 'ENE (Expected Negative Exposure)',
-              data: baseline.ENE,
+              label: 'ENE',
+              data: negativeENE,
               borderColor: 'rgb(217, 48, 37)',
               backgroundColor: 'rgba(217, 48, 37, 0.1)',
               borderWidth: 2,
@@ -1081,14 +1084,7 @@
           },
           plugins: {
             legend: {
-              position: 'top',
-              labels: {
-                usePointStyle: true,
-                padding: 15,
-                font: {
-                  size: 12
-                }
-              }
+              display: false  // Hide legend
             },
             tooltip: {
               backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -1105,7 +1101,8 @@
                 },
                 label: function(context) {
                   const label = context.dataset.label || '';
-                  const value = context.parsed.y;
+                  // Show absolute value for ENE
+                  const value = Math.abs(context.parsed.y);
                   return `${label}: ${formatNotional(Math.round(value))}`;
                 }
               }
@@ -1115,7 +1112,7 @@
             x: {
               title: {
                 display: true,
-                text: 'Time (Years)',
+                text: 'Years',
                 font: {
                   size: 12,
                   weight: '600'
@@ -1126,25 +1123,38 @@
               }
             },
             y: {
-              title: {
-                display: true,
-                text: 'Exposure',
-                font: {
-                  size: 12,
-                  weight: '600'
-                }
-              },
-              beginAtZero: true,
               grid: {
                 color: 'rgba(0, 0, 0, 0.05)'
               },
               ticks: {
                 callback: function(value) {
-                  return formatNotional(value);
+                  return formatNotional(Math.abs(value));
                 }
               }
             }
-          }
+          },
+          // Add custom plugin to draw EPE/ENE labels
+          plugins: [{
+            id: 'exposureLabels',
+            afterDraw: (chart) => {
+              const ctx = chart.ctx;
+              const chartArea = chart.chartArea;
+
+              ctx.save();
+              ctx.font = '600 13px sans-serif';
+              ctx.textAlign = 'right';
+
+              // EPE label (top right of positive area)
+              ctx.fillStyle = 'rgb(10, 102, 194)';
+              ctx.fillText('EPE', chartArea.right - 10, chartArea.top + 20);
+
+              // ENE label (bottom right of negative area)
+              ctx.fillStyle = 'rgb(217, 48, 37)';
+              ctx.fillText('ENE', chartArea.right - 10, chartArea.bottom - 10);
+
+              ctx.restore();
+            }
+          }]
         }
       });
     }
