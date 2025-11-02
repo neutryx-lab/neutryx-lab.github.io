@@ -1047,31 +1047,25 @@
       const negativeENE = baseline.ENE.map(v => -v);
 
       xvaChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: baseline.grid_times,
           datasets: [
             {
               label: 'EPE',
               data: baseline.EPE,
-              borderColor: 'rgb(10, 102, 194)',
-              backgroundColor: 'rgba(10, 102, 194, 0.1)',
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              tension: 0.1,
-              fill: true
+              backgroundColor: 'rgba(10, 102, 194, 0.7)',
+              borderWidth: 0,
+              barPercentage: 0.9,
+              categoryPercentage: 0.95
             },
             {
               label: 'ENE',
               data: negativeENE,
-              borderColor: 'rgb(217, 48, 37)',
-              backgroundColor: 'rgba(217, 48, 37, 0.1)',
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              tension: 0.1,
-              fill: true
+              backgroundColor: 'rgba(217, 48, 37, 0.7)',
+              borderWidth: 0,
+              barPercentage: 0.9,
+              categoryPercentage: 0.95
             }
           ]
         },
