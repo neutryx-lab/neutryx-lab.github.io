@@ -1300,7 +1300,7 @@
         html += `
           <div class="field" style="margin-bottom:16px">
             <label>Exposure Profile (EPE / ENE)</label>
-            <div style="margin-top:12px;background:#fff;padding:16px;border-radius:8px;border:1px solid var(--border)">
+            <div style="margin-top:12px;background:var(--card);padding:16px;border-radius:8px;border:1px solid var(--border)">
               <canvas id="xva-exposure-chart" style="height:300px;width:100%"></canvas>
             </div>
           </div>
@@ -1313,7 +1313,7 @@
         html += `
           <div class="field" style="margin-bottom:16px">
             <label>Risk Sensitivities (AAD)</label>
-            <div style="margin-top:12px;background:#f8f9fa;padding:16px;border-radius:8px;border:1px solid var(--border)">
+            <div style="margin-top:12px;padding:16px;border-radius:8px;border:1px solid var(--border)">
         `;
 
         // CVA Delta - Curve
@@ -1323,7 +1323,7 @@
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
           Object.entries(sens.cva_delta.curve).forEach(([tenor, value]) => {
-            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:6px">
               <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
               <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
             </div>`;
@@ -1343,7 +1343,7 @@
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
             Object.entries(sens.cva_delta.hazard_cp).forEach(([tenor, value]) => {
-              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:6px">
                 <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
                 <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
               </div>`;
@@ -1358,7 +1358,7 @@
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
             Object.entries(sens.cva_delta.hazard_own).forEach(([tenor, value]) => {
-              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:6px">
                 <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
                 <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
               </div>`;
@@ -1374,7 +1374,7 @@
         if(sens.cva_vega !== undefined){
           html += `<div style="margin-bottom:16px">
             <div class="small mutetext" style="margin-bottom:8px">CVA Vega:</div>
-            <div style="padding:8px 12px;background:#fff;border-radius:6px;display:inline-block">
+            <div style="padding:8px 12px;background:rgba(10,102,194,0.05);border-radius:6px;display:inline-block">
               <span style="font-size:1em;font-weight:500;font-family:monospace">${formatNotional(Math.round(sens.cva_vega))}</span>
             </div>
           </div>`;
@@ -1387,7 +1387,7 @@
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
           Object.entries(sens.total_delta.curve).forEach(([tenor, value]) => {
-            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:rgba(10,102,194,0.05);border-radius:6px">
               <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
               <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
             </div>`;
