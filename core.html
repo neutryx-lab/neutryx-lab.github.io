@@ -1072,8 +1072,9 @@
       console.log('Available keys:', Object.keys(baseline));
 
       // Extract DV01 and bucketed risks
-      const dv01 = baseline.dv01 || baseline.total_dv01 || 0;
-      const bucketedRisks = baseline.bucketed_dv01 || baseline.bucketed_risks || baseline.risks || {};
+      // API returns: dv01_parallel (total) and bucket_pv01 (bucketed)
+      const dv01 = baseline.dv01_parallel || baseline.dv01 || baseline.total_dv01 || 0;
+      const bucketedRisks = baseline.bucket_pv01 || baseline.bucketed_dv01 || baseline.bucketed_risks || baseline.risks || {};
 
       console.log('Extracted dv01:', dv01);
       console.log('Extracted bucketedRisks:', bucketedRisks);
@@ -1146,31 +1147,37 @@
       console.log('=== XVA Results Debug ===');
       console.log('Baseline object:', baseline);
       console.log('Available keys:', Object.keys(baseline));
-      console.log('CVA:', baseline.cva);
-      console.log('DVA:', baseline.dva);
-      console.log('FVA:', baseline.fva);
-      console.log('KVA:', baseline.kva);
+      console.log('CVA (uppercase):', baseline.CVA);
+      console.log('DVA (uppercase):', baseline.DVA);
+      console.log('FVA (uppercase):', baseline.FVA);
+      console.log('KVA (uppercase):', baseline.KVA);
       console.log('========================');
+
+      // API returns fields in uppercase: CVA, DVA, FVA, KVA
+      const cva = baseline.CVA || baseline.cva || 0;
+      const dva = baseline.DVA || baseline.dva || 0;
+      const fva = baseline.FVA || baseline.fva || 0;
+      const kva = baseline.KVA || baseline.kva || 0;
 
       let html = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="field">
             <label>CVA</label>
-            <div style="font-size:1.2em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(baseline.cva || 0))}</div>
+            <div style="font-size:1.2em;font-weight:600;color:var(--brand)">${formatNotional(Math.round(cva))}</div>
           </div>
           <div class="field">
             <label>DVA</label>
-            <div style="font-size:1.2em;font-weight:600;color:var(--ok)">${formatNotional(Math.round(baseline.dva || 0))}</div>
+            <div style="font-size:1.2em;font-weight:600;color:var(--ok)">${formatNotional(Math.round(dva))}</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="field">
             <label>FVA</label>
-            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(baseline.fva || 0))}</div>
+            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(fva))}</div>
           </div>
           <div class="field">
             <label>KVA</label>
-            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(baseline.kva || 0))}</div>
+            <div style="font-size:1.1em;font-weight:500">${formatNotional(Math.round(kva))}</div>
           </div>
         </div>
       `;
@@ -1336,12 +1343,16 @@
           console.log('========================');
 
           // Extract results from API response
-          // API returns: {baseline: {...}, jax_nojit: {...}, jax_jit: {...}, ...}
+          // API returns: {baseline: {result: {...}, time_sec: ...}, ...}
           const extractResult = (data) => {
-            if (data && data.time_sec !== undefined) {
-              data.latency_ms = data.time_sec * 1000;
+            if (!data) return null;
+
+            // Extract the nested result object and merge with timing info
+            const result = data.result || data;
+            if (data.time_sec !== undefined) {
+              result.latency_ms = data.time_sec * 1000;
             }
-            return data;
+            return result;
           };
 
           // Build results array with engine names
