@@ -567,11 +567,6 @@
                     </div>
                     <div class="error-msg"></div>
                   </div>
-                  <div class="field" id="field-xva-grid" style="margin-bottom:12px">
-                    <label for="xva-grid">Grid (months)</label>
-                    <input id="xva-grid" type="number" value="1" step="1" min="1" />
-                    <div class="error-msg"></div>
-                  </div>
                 </div>
               </div>
 
@@ -747,7 +742,6 @@
       funding: $('#xva-funding'),
       coc: $('#xva-coc'),
       capFactor: $('#xva-cap-factor'),
-      grid: $('#xva-grid'),
       hazCp1y: $('#xva-haz-cp-1y'),
       hazCp5y: $('#xva-haz-cp-5y'),
       hazCp10y: $('#xva-haz-cp-10y'),
@@ -1335,7 +1329,7 @@
             funding_spread: pctToDecimal(xvaFields.funding.value),
             cost_of_capital: pctToDecimal(xvaFields.coc.value),
             capital_factor: pctToDecimal(xvaFields.capFactor.value),
-            grid_months: parseInt(xvaFields.grid.value)
+            grid_months: 3  // Fixed value for time grid spacing
           }
         };
       }
