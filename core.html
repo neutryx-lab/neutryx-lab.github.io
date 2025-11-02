@@ -240,290 +240,99 @@
         </div>
 
         <div class="section">
-          <!-- Tabs -->
-          <div class="tabs">
-            <button class="tab active" data-tab="pv">PV</button>
-            <button class="tab" data-tab="risk">Risk</button>
-            <button class="tab" data-tab="xva">XVA</button>
-          </div>
-
-          <!-- PV Tab Content (Swap Price) -->
-          <div class="tab-content active" id="pv-content">
-            <div class="two-col-layout">
-              <!-- Left column: Swap Details -->
-              <div class="col-section">
-                <div class="section-header">Swap Details</div>
-                <div class="field" id="field-pv-type" style="margin-bottom:12px">
-                  <label>Type</label>
-                  <div class="freq-toggle" id="pv-type-toggle">
-                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
-                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
-                  </div>
-                </div>
-                <div class="field" id="field-pv-notional" style="margin-bottom:12px">
-                  <label for="pv-notional">Notional</label>
-                  <input id="pv-notional" type="text" value="10,000,000" />
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-pv-fixed-rate" style="margin-bottom:12px">
-                  <label for="pv-fixed-rate">Fixed Rate</label>
-                  <div class="pct-input-wrapper">
-                    <input id="pv-fixed-rate" type="number" value="2.4" step="0.1" />
-                    <span class="pct-symbol">%</span>
-                  </div>
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-pv-pay-freq" style="margin-bottom:12px">
-                  <label for="pv-pay-freq">Pay Freq</label>
-                  <div class="freq-toggle">
-                    <button type="button" class="freq-option" data-freq="3">3M</button>
-                    <button type="button" class="freq-option active" data-freq="6">6M</button>
-                    <button type="button" class="freq-option" data-freq="12">12M</button>
-                  </div>
-                </div>
-                <div class="field" id="field-pv-maturity" style="margin-bottom:12px">
-                  <label for="pv-maturity">Maturity (years)</label>
-                  <input id="pv-maturity" type="number" value="5" step="0.5" min="0.5" />
-                  <div class="error-msg"></div>
+          <!-- Shared Parameters (always visible) -->
+          <div class="two-col-layout">
+            <!-- Left column: Swap Details -->
+            <div class="col-section">
+              <div class="section-header">Swap Details</div>
+              <div class="field" id="field-shared-type" style="margin-bottom:12px">
+                <label>Type</label>
+                <div class="freq-toggle" id="shared-type-toggle">
+                  <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
+                  <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
                 </div>
               </div>
+              <div class="field" id="field-shared-notional" style="margin-bottom:12px">
+                <label for="shared-notional">Notional</label>
+                <input id="shared-notional" type="text" value="10,000,000" />
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-shared-fixed-rate" style="margin-bottom:12px">
+                <label for="shared-fixed-rate">Fixed Rate</label>
+                <div class="pct-input-wrapper">
+                  <input id="shared-fixed-rate" type="number" value="2.4" step="0.1" />
+                  <span class="pct-symbol">%</span>
+                </div>
+                <div class="error-msg"></div>
+              </div>
+              <div class="field" id="field-shared-pay-freq" style="margin-bottom:12px">
+                <label for="shared-pay-freq">Pay Freq</label>
+                <div class="freq-toggle" id="shared-pay-freq-toggle">
+                  <button type="button" class="freq-option" data-freq="3">3M</button>
+                  <button type="button" class="freq-option active" data-freq="6">6M</button>
+                  <button type="button" class="freq-option" data-freq="12">12M</button>
+                </div>
+              </div>
+              <div class="field" id="field-shared-maturity" style="margin-bottom:12px">
+                <label for="shared-maturity">Maturity (years)</label>
+                <input id="shared-maturity" type="number" value="5" step="0.5" min="0.5" />
+                <div class="error-msg"></div>
+              </div>
+            </div>
 
-              <!-- Right column: Zero Rate Curve -->
-              <div class="col-section">
-                <div class="section-header">Zero Rate Curve</div>
-                <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="field" id="field-pv-curve-3m" style="margin-bottom:12px">
-                    <label for="pv-curve-3m">3M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-3m" type="number" value="0.7" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+            <!-- Right column: Zero Rate Curve -->
+            <div class="col-section">
+              <div class="section-header">Zero Rate Curve</div>
+              <div class="row" style="grid-template-columns:repeat(3,1fr)">
+                <div class="field" id="field-shared-curve-3m" style="margin-bottom:12px">
+                  <label for="shared-curve-3m">3M</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-3m" type="number" value="0.7" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
-                  <div class="field" id="field-pv-curve-6m" style="margin-bottom:12px">
-                    <label for="pv-curve-6m">6M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-6m" type="number" value="0.9" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+                </div>
+                <div class="field" id="field-shared-curve-6m" style="margin-bottom:12px">
+                  <label for="shared-curve-6m">6M</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-6m" type="number" value="0.9" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
-                  <div class="field" id="field-pv-curve-1y" style="margin-bottom:12px">
-                    <label for="pv-curve-1y">1Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-1y" type="number" value="1.1" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+                </div>
+                <div class="field" id="field-shared-curve-1y" style="margin-bottom:12px">
+                  <label for="shared-curve-1y">1Y</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-1y" type="number" value="1.1" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
-                  <div class="field" id="field-pv-curve-2y" style="margin-bottom:12px">
-                    <label for="pv-curve-2y">2Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-2y" type="number" value="1.5" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+                </div>
+                <div class="field" id="field-shared-curve-2y" style="margin-bottom:12px">
+                  <label for="shared-curve-2y">2Y</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-2y" type="number" value="1.5" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
-                  <div class="field" id="field-pv-curve-5y" style="margin-bottom:12px">
-                    <label for="pv-curve-5y">5Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-5y" type="number" value="2.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+                </div>
+                <div class="field" id="field-shared-curve-5y" style="margin-bottom:12px">
+                  <label for="shared-curve-5y">5Y</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-5y" type="number" value="2.2" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
-                  <div class="field" id="field-pv-curve-10y" style="margin-bottom:12px">
-                    <label for="pv-curve-10y">10Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="pv-curve-10y" type="number" value="2.6" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
+                </div>
+                <div class="field" id="field-shared-curve-10y" style="margin-bottom:12px">
+                  <label for="shared-curve-10y">10Y</label>
+                  <div class="pct-input-wrapper">
+                    <input id="shared-curve-10y" type="number" value="2.6" step="0.1" />
+                    <span class="pct-symbol">%</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Risk Tab Content (Swap Risks) -->
-          <div class="tab-content" id="risk-content">
+          <!-- XVA-specific Parameters (shown only when XVA tab is active) -->
+          <div id="xva-specific-params" style="display:none;margin-top:16px">
             <div class="two-col-layout">
-              <!-- Left column: Swap Details -->
-              <div class="col-section">
-                <div class="section-header">Swap Details</div>
-                <div class="field" id="field-risk-type" style="margin-bottom:12px">
-                  <label>Type</label>
-                  <div class="freq-toggle" id="risk-type-toggle">
-                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
-                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
-                  </div>
-                </div>
-                <div class="field" id="field-risk-notional" style="margin-bottom:12px">
-                  <label for="risk-notional">Notional</label>
-                  <input id="risk-notional" type="text" value="10,000,000" />
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-risk-fixed-rate" style="margin-bottom:12px">
-                  <label for="risk-fixed-rate">Fixed Rate</label>
-                  <div class="pct-input-wrapper">
-                    <input id="risk-fixed-rate" type="number" value="2.4" step="0.1" />
-                    <span class="pct-symbol">%</span>
-                  </div>
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-risk-pay-freq" style="margin-bottom:12px">
-                  <label for="risk-pay-freq">Pay Freq</label>
-                  <div class="freq-toggle">
-                    <button type="button" class="freq-option" data-freq="3">3M</button>
-                    <button type="button" class="freq-option active" data-freq="6">6M</button>
-                    <button type="button" class="freq-option" data-freq="12">12M</button>
-                  </div>
-                </div>
-                <div class="field" id="field-risk-maturity" style="margin-bottom:12px">
-                  <label for="risk-maturity">Maturity (years)</label>
-                  <input id="risk-maturity" type="number" value="5" step="0.5" min="0.5" />
-                  <div class="error-msg"></div>
-                </div>
-              </div>
-
-              <!-- Right column: Zero Rate Curve -->
-              <div class="col-section">
-                <div class="section-header">Zero Rate Curve</div>
-                <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="field" id="field-risk-curve-3m" style="margin-bottom:12px">
-                    <label for="risk-curve-3m">3M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-3m" type="number" value="0.7" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-risk-curve-6m" style="margin-bottom:12px">
-                    <label for="risk-curve-6m">6M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-6m" type="number" value="0.9" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-risk-curve-1y" style="margin-bottom:12px">
-                    <label for="risk-curve-1y">1Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-1y" type="number" value="1.1" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-risk-curve-2y" style="margin-bottom:12px">
-                    <label for="risk-curve-2y">2Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-2y" type="number" value="1.5" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-risk-curve-5y" style="margin-bottom:12px">
-                    <label for="risk-curve-5y">5Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-5y" type="number" value="2.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-risk-curve-10y" style="margin-bottom:12px">
-                    <label for="risk-curve-10y">10Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="risk-curve-10y" type="number" value="2.6" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- XVA Tab Content -->
-          <div class="tab-content" id="xva-content">
-            <div class="two-col-layout">
-              <!-- Left column: Swap Details -->
-              <div class="col-section">
-                <div class="section-header">Swap Details</div>
-                <div class="field" id="field-xva-type" style="margin-bottom:12px">
-                  <label>Type</label>
-                  <div class="freq-toggle" id="xva-type-toggle">
-                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
-                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
-                  </div>
-                </div>
-                <div class="field" id="field-xva-notional" style="margin-bottom:12px">
-                  <label for="xva-notional">Notional</label>
-                  <input id="xva-notional" type="text" value="10,000,000" />
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-xva-fixed-rate" style="margin-bottom:12px">
-                  <label for="xva-fixed-rate">Fixed Rate</label>
-                  <div class="pct-input-wrapper">
-                    <input id="xva-fixed-rate" type="number" value="2.4" step="0.1" />
-                    <span class="pct-symbol">%</span>
-                  </div>
-                  <div class="error-msg"></div>
-                </div>
-                <div class="field" id="field-xva-pay-freq" style="margin-bottom:12px">
-                  <label for="xva-pay-freq">Pay Freq</label>
-                  <div class="freq-toggle">
-                    <button type="button" class="freq-option" data-freq="3">3M</button>
-                    <button type="button" class="freq-option active" data-freq="6">6M</button>
-                    <button type="button" class="freq-option" data-freq="12">12M</button>
-                  </div>
-                </div>
-                <div class="field" id="field-xva-maturity" style="margin-bottom:12px">
-                  <label for="xva-maturity">Maturity (years)</label>
-                  <input id="xva-maturity" type="number" value="5" step="0.5" min="0.5" />
-                  <div class="error-msg"></div>
-                </div>
-              </div>
-
-              <!-- Right column: Zero Rate Curve (6 tenors) -->
-              <div class="col-section">
-                <div class="section-header">Zero Rate Curve</div>
-                <div class="row" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="field" id="field-xva-curve-3m" style="margin-bottom:12px">
-                    <label for="xva-curve-3m">3M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-3m" type="number" value="0.7" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-xva-curve-6m" style="margin-bottom:12px">
-                    <label for="xva-curve-6m">6M</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-6m" type="number" value="0.9" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-xva-curve-1y" style="margin-bottom:12px">
-                    <label for="xva-curve-1y">1Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-1y" type="number" value="1.1" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-xva-curve-2y" style="margin-bottom:12px">
-                    <label for="xva-curve-2y">2Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-2y" type="number" value="1.5" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-xva-curve-5y" style="margin-bottom:12px">
-                    <label for="xva-curve-5y">5Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-5y" type="number" value="2.2" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-xva-curve-10y" style="margin-bottom:12px">
-                    <label for="xva-curve-10y">10Y</label>
-                    <div class="pct-input-wrapper">
-                      <input id="xva-curve-10y" type="number" value="2.6" step="0.1" />
-                      <span class="pct-symbol">%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- XVA Parameters and Hazard Curves (below) -->
-            <div class="two-col-layout" style="margin-top:16px">
               <!-- Left: XVA Parameters -->
               <div class="col-section">
                 <div class="section-header">XVA Parameters</div>
@@ -638,6 +447,16 @@
             </div>
           </div>
 
+          <!-- Calculation Type Tabs -->
+          <div style="margin-top:20px">
+            <div class="small mutetext" style="margin-bottom:8px">Calculation Type:</div>
+            <div class="tabs">
+              <button class="tab active" data-tab="pv">PV</button>
+              <button class="tab" data-tab="risk">Risk</button>
+              <button class="tab" data-tab="xva">XVA</button>
+            </div>
+          </div>
+
           <!-- Action Buttons (common) -->
           <div class="action-buttons">
             <button id="btnRun" class="btn primary" type="button">Run computation</button>
@@ -711,51 +530,25 @@
     // API URL (hardcoded)
     const API_BASE_URL = 'https://neutryx-api.onrender.com';
 
-    // Pay frequency values (for all tabs)
-    let pvPayFreq = 6;
-    let riskPayFreq = 6;
-    let xvaPayFreq = 6;
+    // Shared pay frequency and type (single set for all calculation types)
+    let sharedPayFreq = 6;
+    let sharedPayType = 'true'; // 'true' = Pay Fixed, 'false' = Receive Fixed
 
-    // Pay type values (for all tabs) - 'true' = Pay Fixed, 'false' = Receive Fixed
-    let pvPayType = 'true';
-    let riskPayType = 'true';
-    let xvaPayType = 'true';
-
-    // Field references by tab
-    const pvFields = {
-      notional: $('#pv-notional'),
-      fixedRate: $('#pv-fixed-rate'),
-      maturity: $('#pv-maturity'),
-      curve3m: $('#pv-curve-3m'),
-      curve6m: $('#pv-curve-6m'),
-      curve1y: $('#pv-curve-1y'),
-      curve2y: $('#pv-curve-2y'),
-      curve5y: $('#pv-curve-5y'),
-      curve10y: $('#pv-curve-10y')
+    // Shared field references (used for all calculation types)
+    const sharedFields = {
+      notional: $('#shared-notional'),
+      fixedRate: $('#shared-fixed-rate'),
+      maturity: $('#shared-maturity'),
+      curve3m: $('#shared-curve-3m'),
+      curve6m: $('#shared-curve-6m'),
+      curve1y: $('#shared-curve-1y'),
+      curve2y: $('#shared-curve-2y'),
+      curve5y: $('#shared-curve-5y'),
+      curve10y: $('#shared-curve-10y')
     };
 
-    const riskFields = {
-      notional: $('#risk-notional'),
-      fixedRate: $('#risk-fixed-rate'),
-      maturity: $('#risk-maturity'),
-      curve3m: $('#risk-curve-3m'),
-      curve6m: $('#risk-curve-6m'),
-      curve1y: $('#risk-curve-1y'),
-      curve2y: $('#risk-curve-2y'),
-      curve5y: $('#risk-curve-5y'),
-      curve10y: $('#risk-curve-10y')
-    };
-
+    // XVA-specific field references
     const xvaFields = {
-      notional: $('#xva-notional'),
-      fixedRate: $('#xva-fixed-rate'),
-      maturity: $('#xva-maturity'),
-      curve3m: $('#xva-curve-3m'),
-      curve6m: $('#xva-curve-6m'),
-      curve1y: $('#xva-curve-1y'),
-      curve2y: $('#xva-curve-2y'),
-      curve5y: $('#xva-curve-5y'),
-      curve10y: $('#xva-curve-10y'),
       lgdCp: $('#xva-lgd-cp'),
       lgdOwn: $('#xva-lgd-own'),
       funding: $('#xva-funding'),
@@ -795,24 +588,21 @@
         }
       });
 
-      // Update tab content
-      $$('.tab-content').forEach(content => {
-        if(content.id === `${tabName}-content`){
-          content.classList.add('active');
-        } else {
-          content.classList.remove('active');
-        }
-      });
-
-      // Clear errors when switching tabs
-      clearAllErrors();
-      setStatus('muted', 'idle');
+      // Show/hide XVA-specific parameters
+      const xvaParams = $('#xva-specific-params');
+      if(xvaParams){
+        xvaParams.style.display = (tabName === 'xva') ? 'block' : 'none';
+      }
 
       // Show/hide XVA MC button
       const xvaMCContainer = $('#xva-mc-button-container');
       if(xvaMCContainer){
         xvaMCContainer.style.display = (tabName === 'xva') ? 'flex' : 'none';
       }
+
+      // Clear errors when switching tabs
+      clearAllErrors();
+      setStatus('muted', 'idle');
     }
 
     // Add tab click listeners
@@ -823,10 +613,10 @@
       });
     });
 
-    // Add frequency and type toggle listeners
+    // Add frequency and type toggle listeners for shared form
     $$('.freq-toggle').forEach(toggle => {
       const buttons = toggle.querySelectorAll('.freq-option');
-      const tabId = toggle.closest('.tab-content')?.id;
+      const toggleId = toggle.id;
 
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -835,23 +625,18 @@
           // Add active to clicked button
           btn.classList.add('active');
 
-          // Update the corresponding variable (frequency or type)
-          if(tabId){
-            const freq = btn.getAttribute('data-freq');
-            const type = btn.getAttribute('data-type');
+          // Update the shared variables
+          const freq = btn.getAttribute('data-freq');
+          const type = btn.getAttribute('data-type');
 
-            if(freq){
-              // Pay frequency toggle
-              const freqValue = parseInt(freq);
-              if(tabId === 'pv-content') pvPayFreq = freqValue;
-              else if(tabId === 'risk-content') riskPayFreq = freqValue;
-              else if(tabId === 'xva-content') xvaPayFreq = freqValue;
-            } else if(type){
-              // Type toggle (Pay Fixed / Receive Fixed)
-              if(tabId === 'pv-content') pvPayType = type;
-              else if(tabId === 'risk-content') riskPayType = type;
-              else if(tabId === 'xva-content') xvaPayType = type;
-            }
+          if(freq){
+            // Pay frequency toggle
+            sharedPayFreq = parseInt(freq);
+            saveFormState(); // Save to localStorage
+          } else if(type){
+            // Type toggle (Pay Fixed / Receive Fixed)
+            sharedPayType = type;
+            saveFormState(); // Save to localStorage
           }
         });
       });
@@ -908,32 +693,29 @@
       let valid = true;
       clearAllErrors();
 
-      // Validate all numeric inputs in the active tab
-      const activeContent = $(`#${activeTab}-content`);
-      if(activeContent){
-        activeContent.querySelectorAll('input[type="number"]').forEach(input => {
-          if(input.value && !validateField(input.id, input.value)){
-            valid = false;
-          }
-        });
-        // Also validate text inputs (notional)
-        activeContent.querySelectorAll('input[type="text"]').forEach(input => {
-          if(input.id.includes('notional') && input.value && !validateField(input.id, input.value)){
+      // Validate shared fields (always)
+      Object.values(sharedFields).forEach(field => {
+        if(field && field.value && !validateField(field.id, field.value)){
+          valid = false;
+        }
+      });
+
+      // Validate XVA-specific fields if XVA tab is active
+      if(activeTab === 'xva'){
+        Object.values(xvaFields).forEach(field => {
+          if(field && field.value && !validateField(field.id, field.value)){
             valid = false;
           }
         });
       }
 
       // Additional validation: Maturity must be multiple of Pay Freq
-      let fields = activeTab === 'pv' ? pvFields : (activeTab === 'risk' ? riskFields : xvaFields);
-      let payFreqMonths = activeTab === 'pv' ? pvPayFreq : (activeTab === 'risk' ? riskPayFreq : xvaPayFreq);
-
-      if(fields.maturity){
-        const maturity = parseFloat(fields.maturity.value);
+      if(sharedFields.maturity){
+        const maturity = parseFloat(sharedFields.maturity.value);
         const maturityMonths = maturity * 12;
 
-        if(maturityMonths % payFreqMonths !== 0){
-          showFieldError(fields.maturity.id, `Maturity must be a multiple of payment frequency (${payFreqMonths} months)`);
+        if(maturityMonths % sharedPayFreq !== 0){
+          showFieldError(sharedFields.maturity.id, `Maturity must be a multiple of payment frequency (${sharedPayFreq} months)`);
           valid = false;
         }
       }
@@ -1510,47 +1292,28 @@
       const randPctRate = () => (Math.random()*3 + 0.5).toFixed(1);
       const randMaturity = () => (Math.floor(Math.random()*8)+2).toFixed(1);
 
-      if(activeTab === 'pv'){
-        // Notional with comma formatting
-        pvFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
-        // Fixed rate as percentage
-        pvFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
-        pvFields.maturity.value = randMaturity();
-        // Randomize curve (as percentage) - 6 tenors: 3M, 6M, 1Y, 2Y, 5Y, 10Y
-        pvFields.curve3m.value = randPctRate();
-        pvFields.curve6m.value = (parseFloat(pvFields.curve3m.value) + 0.2).toFixed(1);
-        pvFields.curve1y.value = (parseFloat(pvFields.curve6m.value) + 0.2).toFixed(1);
-        pvFields.curve2y.value = (parseFloat(pvFields.curve1y.value) + 0.4).toFixed(1);
-        pvFields.curve5y.value = (parseFloat(pvFields.curve2y.value) + 0.7).toFixed(1);
-        pvFields.curve10y.value = (parseFloat(pvFields.curve5y.value) + 0.4).toFixed(1);
-      } else if(activeTab === 'risk'){
-        riskFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
-        riskFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
-        riskFields.maturity.value = randMaturity();
-        // Randomize curve (as percentage) - 6 tenors: 3M, 6M, 1Y, 2Y, 5Y, 10Y
-        riskFields.curve3m.value = randPctRate();
-        riskFields.curve6m.value = (parseFloat(riskFields.curve3m.value) + 0.2).toFixed(1);
-        riskFields.curve1y.value = (parseFloat(riskFields.curve6m.value) + 0.2).toFixed(1);
-        riskFields.curve2y.value = (parseFloat(riskFields.curve1y.value) + 0.4).toFixed(1);
-        riskFields.curve5y.value = (parseFloat(riskFields.curve2y.value) + 0.7).toFixed(1);
-        riskFields.curve10y.value = (parseFloat(riskFields.curve5y.value) + 0.4).toFixed(1);
-      } else if(activeTab === 'xva'){
-        xvaFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
-        xvaFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
-        xvaFields.maturity.value = (Math.floor(Math.random()*8)+3).toFixed(1);
-        // XVA parameters as percentage
+      // Populate shared fields (used for all calculation types)
+      sharedFields.notional.value = formatNotional((Math.floor(Math.random()*9)+1) * 10_000_000);
+      sharedFields.fixedRate.value = (Math.random()*2 + 1.5).toFixed(1);
+      sharedFields.maturity.value = randMaturity();
+
+      // Randomize curve (as percentage) - 6 tenors: 3M, 6M, 1Y, 2Y, 5Y, 10Y
+      sharedFields.curve3m.value = randPctRate();
+      sharedFields.curve6m.value = (parseFloat(sharedFields.curve3m.value) + 0.2).toFixed(1);
+      sharedFields.curve1y.value = (parseFloat(sharedFields.curve6m.value) + 0.2).toFixed(1);
+      sharedFields.curve2y.value = (parseFloat(sharedFields.curve1y.value) + 0.4).toFixed(1);
+      sharedFields.curve5y.value = (parseFloat(sharedFields.curve2y.value) + 0.7).toFixed(1);
+      sharedFields.curve10y.value = (parseFloat(sharedFields.curve5y.value) + 0.4).toFixed(1);
+
+      // Populate XVA-specific fields if XVA tab is active
+      if(activeTab === 'xva'){
         xvaFields.lgdCp.value = (Math.random()*30 + 50).toFixed(0);
         xvaFields.lgdOwn.value = (Math.random()*30 + 50).toFixed(0);
-        xvaFields.funding.value = (Math.random()*0.3 + 0.1).toFixed(1);
+        xvaFields.funding.value = (Math.random()*30 + 10).toFixed(0);
         xvaFields.coc.value = (Math.random()*5 + 8).toFixed(0);
         xvaFields.capFactor.value = (Math.random()*20 + 40).toFixed(0);
-        // Curve as percentage - 6 tenors: 3M, 6M, 1Y, 2Y, 5Y, 10Y
-        xvaFields.curve3m.value = randPctRate();
-        xvaFields.curve6m.value = (parseFloat(xvaFields.curve3m.value) + 0.2).toFixed(1);
-        xvaFields.curve1y.value = (parseFloat(xvaFields.curve6m.value) + 0.2).toFixed(1);
-        xvaFields.curve2y.value = (parseFloat(xvaFields.curve1y.value) + 0.4).toFixed(1);
-        xvaFields.curve5y.value = (parseFloat(xvaFields.curve2y.value) + 0.7).toFixed(1);
-        xvaFields.curve10y.value = (parseFloat(xvaFields.curve5y.value) + 0.4).toFixed(1);
+        xvaFields.simVol.value = (Math.random()*30 + 40).toFixed(0);
+
         // Hazard curves as percentage
         xvaFields.hazCp1y.value = (Math.random()*0.5 + 0.8).toFixed(1);
         xvaFields.hazCp5y.value = (parseFloat(xvaFields.hazCp1y.value) + 0.2).toFixed(1);
@@ -1559,6 +1322,8 @@
         xvaFields.hazOwn5y.value = (parseFloat(xvaFields.hazOwn1y.value) + 0.2).toFixed(1);
         xvaFields.hazOwn10y.value = (parseFloat(xvaFields.hazOwn5y.value) + 0.2).toFixed(1);
       }
+
+      saveFormState(); // Save to localStorage
     }
 
     async function run(){
@@ -1576,19 +1341,19 @@
       if(activeTab === 'pv'){
         endpoint = 'swap/price';
         baseRequestBody = {
-          swap: buildSwapRequest(pvFields, pvPayFreq, pvPayType, true)
+          swap: buildSwapRequest(sharedFields, sharedPayFreq, sharedPayType, true)
         };
       } else if(activeTab === 'risk'){
         endpoint = 'swap/risks';
         baseRequestBody = {
-          swap: buildSwapRequest(riskFields, riskPayFreq, riskPayType, true)
+          swap: buildSwapRequest(sharedFields, sharedPayFreq, sharedPayType, true)
         };
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
-        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, xvaPayType, false);
+        const xvaSwap = buildSwapRequest(sharedFields, sharedPayFreq, sharedPayType, false);
         // Build XVA curve using buildCurve for consistency (same 6 tenors as PV/Risk)
         const xvaTenors = ['3M', '6M', '1Y', '2Y', '5Y', '10Y'];
-        xvaSwap.curve = buildCurve(xvaFields, xvaTenors);
+        xvaSwap.curve = buildCurve(sharedFields, xvaTenors);
 
         baseRequestBody = {
           swap: xvaSwap,
@@ -1712,10 +1477,10 @@
       const base = API_BASE_URL;
       const endpoint = 'swap/xva_risks';
 
-      // Build XVA swap request
-      const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, xvaPayType, false);
+      // Build XVA swap request using shared fields
+      const xvaSwap = buildSwapRequest(sharedFields, sharedPayFreq, sharedPayType, false);
       const xvaTenors = ['3M', '6M', '1Y', '2Y', '5Y', '10Y'];
-      xvaSwap.curve = buildCurve(xvaFields, xvaTenors);
+      xvaSwap.curve = buildCurve(sharedFields, xvaTenors);
 
       const requestBody = {
         swap: xvaSwap,
@@ -1824,6 +1589,112 @@
       }
     }
 
+    // localStorage persistence functions
+    function saveFormState(){
+      try{
+        const state = {
+          // Shared fields
+          notional: sharedFields.notional.value,
+          fixedRate: sharedFields.fixedRate.value,
+          maturity: sharedFields.maturity.value,
+          curve3m: sharedFields.curve3m.value,
+          curve6m: sharedFields.curve6m.value,
+          curve1y: sharedFields.curve1y.value,
+          curve2y: sharedFields.curve2y.value,
+          curve5y: sharedFields.curve5y.value,
+          curve10y: sharedFields.curve10y.value,
+          payFreq: sharedPayFreq,
+          payType: sharedPayType,
+          // XVA-specific fields
+          xva: {
+            lgdCp: xvaFields.lgdCp.value,
+            lgdOwn: xvaFields.lgdOwn.value,
+            funding: xvaFields.funding.value,
+            coc: xvaFields.coc.value,
+            capFactor: xvaFields.capFactor.value,
+            simVol: xvaFields.simVol.value,
+            hazCp1y: xvaFields.hazCp1y.value,
+            hazCp5y: xvaFields.hazCp5y.value,
+            hazCp10y: xvaFields.hazCp10y.value,
+            hazOwn1y: xvaFields.hazOwn1y.value,
+            hazOwn5y: xvaFields.hazOwn5y.value,
+            hazOwn10y: xvaFields.hazOwn10y.value
+          },
+          // Active tab
+          activeTab: activeTab
+        };
+        localStorage.setItem('neutryx-core-form-state', JSON.stringify(state));
+      }catch(e){
+        console.warn('Failed to save form state:', e);
+      }
+    }
+
+    function restoreFormState(){
+      try{
+        const saved = localStorage.getItem('neutryx-core-form-state');
+        if(!saved) return;
+
+        const state = JSON.parse(saved);
+
+        // Restore shared fields
+        if(state.notional) sharedFields.notional.value = state.notional;
+        if(state.fixedRate) sharedFields.fixedRate.value = state.fixedRate;
+        if(state.maturity) sharedFields.maturity.value = state.maturity;
+        if(state.curve3m) sharedFields.curve3m.value = state.curve3m;
+        if(state.curve6m) sharedFields.curve6m.value = state.curve6m;
+        if(state.curve1y) sharedFields.curve1y.value = state.curve1y;
+        if(state.curve2y) sharedFields.curve2y.value = state.curve2y;
+        if(state.curve5y) sharedFields.curve5y.value = state.curve5y;
+        if(state.curve10y) sharedFields.curve10y.value = state.curve10y;
+
+        // Restore pay frequency and type
+        if(state.payFreq){
+          sharedPayFreq = state.payFreq;
+          // Update toggle button active state
+          const freqToggle = $('#shared-pay-freq-toggle');
+          if(freqToggle){
+            freqToggle.querySelectorAll('.freq-option').forEach(btn => {
+              btn.classList.toggle('active', parseInt(btn.getAttribute('data-freq')) === state.payFreq);
+            });
+          }
+        }
+        if(state.payType){
+          sharedPayType = state.payType;
+          // Update type toggle button active state
+          const typeToggle = $('#shared-type-toggle');
+          if(typeToggle){
+            typeToggle.querySelectorAll('.freq-option').forEach(btn => {
+              btn.classList.toggle('active', btn.getAttribute('data-type') === state.payType);
+            });
+          }
+        }
+
+        // Restore XVA-specific fields
+        if(state.xva){
+          if(state.xva.lgdCp) xvaFields.lgdCp.value = state.xva.lgdCp;
+          if(state.xva.lgdOwn) xvaFields.lgdOwn.value = state.xva.lgdOwn;
+          if(state.xva.funding) xvaFields.funding.value = state.xva.funding;
+          if(state.xva.coc) xvaFields.coc.value = state.xva.coc;
+          if(state.xva.capFactor) xvaFields.capFactor.value = state.xva.capFactor;
+          if(state.xva.simVol) xvaFields.simVol.value = state.xva.simVol;
+          if(state.xva.hazCp1y) xvaFields.hazCp1y.value = state.xva.hazCp1y;
+          if(state.xva.hazCp5y) xvaFields.hazCp5y.value = state.xva.hazCp5y;
+          if(state.xva.hazCp10y) xvaFields.hazCp10y.value = state.xva.hazCp10y;
+          if(state.xva.hazOwn1y) xvaFields.hazOwn1y.value = state.xva.hazOwn1y;
+          if(state.xva.hazOwn5y) xvaFields.hazOwn5y.value = state.xva.hazOwn5y;
+          if(state.xva.hazOwn10y) xvaFields.hazOwn10y.value = state.xva.hazOwn10y;
+        }
+
+        // Restore active tab
+        if(state.activeTab){
+          switchTab(state.activeTab);
+        }
+      }catch(e){
+        console.warn('Failed to restore form state:', e);
+      }
+    }
+
+    // Event listeners
     btnRun.addEventListener('click', run);
     btnSample.addEventListener('click', sample);
 
@@ -1832,8 +1703,16 @@
       btnXVAMC.addEventListener('click', runXVAMC);
     }
 
-    // Initialize endpoint display
-    switchTab('pv');
+    // Add change event listeners to all input fields to auto-save
+    $$('input').forEach(input => {
+      input.addEventListener('change', saveFormState);
+    });
+
+    // Initialize: restore saved state, then switch to default tab
+    restoreFormState();
+    if(!localStorage.getItem('neutryx-core-form-state')){
+      switchTab('pv'); // Only switch to default if no saved state
+    }
 
     // Auto-test API connection on page load
     testConnection();
