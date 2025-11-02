@@ -1772,36 +1772,20 @@
           console.log('Full response:', raw);
           console.log('========================');
 
-          // Extract results from API response (same structure as XVA)
-          const extractResult = (data) => {
-            if (!data) return null;
-            const result = data.result || data;
-            if (data.time_sec !== undefined) {
-              result.latency_ms = data.time_sec * 1000;
-            }
-            return result;
-          };
-
-          const engineMap = [
-            { key: 'baseline', name: 'Baseline', data: raw.baseline },
-            { key: 'JIT', name: 'JIT', data: raw.JIT },
-            { key: 'AAD_JIT', name: 'AAD+JIT', data: raw.AAD_JIT }
-          ];
-
-          const results = engineMap
-            .filter(e => e.data != null)
-            .map(e => {
-              const result = extractResult(e.data);
-              result.engineName = e.name;
-              return result;
-            });
+          // XVA Risks endpoint returns a single result (not 3 engines)
+          // Response structure: { input: {...}, result: {...}, time_sec: ... }
+          const result = raw.result || {};
+          if (raw.time_sec !== undefined) {
+            result.latency_ms = raw.time_sec * 1000;
+          }
+          result.engineName = 'AAD+JIT'; // XVA Risks uses AAD+JIT
 
           out.textContent = JSON.stringify(raw, null, 2);
           out.parentElement.classList.add('fade-in');
 
           if(res.ok){
-            // Display parsed comparison results as array
-            displayParsedResults(results);
+            // Display result as single-item array
+            displayParsedResults([result]);
             setStatus('ok', 'MC success');
           } else {
             setStatus('err', `HTTP ${res.status} error`);
