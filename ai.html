@@ -3,30 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neutryx‑AI — IP Statement</title>
+  <title>Neutryx AI Engine</title>
+  <meta name="description" content="A constraint-aware neural universal approximator — a foundation for model-free numerical reasoning.">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#f9f9fb;}
-  header{position:sticky; top:0; z-index:50; background:#fff;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+  body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#e5e5e5;background:#0f0f0f;}
+  header{position:sticky; top:0; z-index:50; background:#1a1a1a;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.3);border-bottom:1px solid #2a2a2a;}
   .wrap{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;}
-  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#e5e5e5;}
   .brand img{width:36px;height:36px;object-fit:contain;}
   .brand span{font-weight:700;letter-spacing:.2px;}
   nav{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap;}
-  nav a{color:#0a66c2;text-decoration:none;font-size:.95rem;}
+  nav a{color:#60a5fa;text-decoration:none;font-size:.95rem;}
   nav a:hover{text-decoration:underline;}
   @media (max-width: 640px) {
     .wrap { flex-direction:column; align-items:flex-start; gap:12px; }
     nav { margin-left:0; width:100%; justify-content:flex-start; gap:12px; }
     .brand span { font-size:.95rem; }
-    h1 { font-size:1.6rem; }
   }
-  main{max-width:980px;margin:0 auto;padding:24px 16px 56px;}
-  h1{margin:.2rem 0 .4rem;font-size:2rem}
-  p{color:#444;line-height:1.7}
-  .btn{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid #d9d9e3;text-decoration:none;color:#0a66c2}
-  .box{background:#fff;border-left:4px solid #f5b100;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  .note{background:#fff;border-left:4px solid #0a66c2;padding:12px 14px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  footer{text-align:center;color:#777;padding:28px 16px 44px;}
+  footer{text-align:center;color:#888;padding:28px 16px 44px;}
 </style>
 </head>
 <body>
@@ -45,20 +40,88 @@
     </div>
   </header>
 
-  <main>
-    <h1>Neutryx‑AI (Under IP Review)</h1>
-    <section class="box">
-      <p><strong>Disclosure status:</strong> Technical details, algorithms, architectures, loss designs, training procedures, and datasets associated with Neutryx‑AI are not publicly disclosed prior to filing. Any public communications will remain strictly non‑enabling and non‑confidential.</p>
-    </section>
-    <section>
-      <h2>What we can share now</h2>
-      <ul>
-        <li>High‑level goals and non‑technical summaries of application domains.</li>
-        <li>Public benchmarks and classical baselines (e.g., Black–Scholes) used only for illustration.</li>
-        <li>Contact channel for collaboration enquiries: <a href="https://github.com/neutryx-lab/neutryx-lab.github.io/issues" target="_blank" rel="noreferrer noopener">GitHub Issues</a></li>
-      </ul>
-    </section>
-  </main>
+  <section id="ai" class="container mx-auto px-6 py-16">
+    <header class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight">Neutryx AI Engine</h1>
+      <p class="mt-4 text-lg text-neutral-300">
+        A constraint-aware neural universal approximator — a foundation for model-free numerical reasoning.
+      </p>
+    </header>
+
+    <div class="max-w-5xl mx-auto mt-10 grid gap-8 md:grid-cols-2">
+      <article class="prose prose-invert">
+        <h2>What it is</h2>
+        <p>
+          Neutryx introduces a <strong>general-purpose constrained computation engine</strong>:
+          a neural system that learns to approximate arbitrary functional relationships
+          under explicit mathematical, physical, or probabilistic constraints.
+          Rather than hard-coding solvers, constraints are embedded and enforced through a
+          <em>bilevel adaptive Lagrangian</em> optimiser with meta-gradient control.
+        </p>
+
+        <h3>Why it matters</h3>
+        <ul>
+          <li><strong>Domain-agnostic:</strong> physics, finance, engineering — one engine.</li>
+          <li><strong>Model-free:</strong> no predefined operators or meshes.</li>
+          <li><strong>Admissible by design:</strong> conservation, no-arbitrage, positivity and normalisation are enforced as constraints.</li>
+          <li><strong>HPC-ready:</strong> JAX with JIT, vectorisation and pmap/pjit; GPU/TPU acceleration.</li>
+        </ul>
+
+        <h3>Dual-Layer Release Model</h3>
+        <p>
+          We separate openness for research from protection for commercialisation:
+        </p>
+        <ul>
+          <li><strong>Neutryx Core (Public):</strong> open-source JAX library with differentiable pricing,
+            PDE solvers, AAD/JIT, Monte Carlo, documentation and demos.</li>
+          <li><strong>Neutryx AI Engine (Proprietary):</strong> constraint-coupled bilevel learning,
+            dynamic constraint embeddings and meta-gradient controllers — the subject of our UCLB invention disclosure.</li>
+        </ul>
+        <p class="text-sm opacity-80">
+          The Core demonstrates reproducibility and scientific validity; the Engine contains the protectable IP.
+        </p>
+      </article>
+
+      <aside class="prose prose-invert">
+        <h2>Capabilities</h2>
+        <ul>
+          <li>Differentiable Monte Carlo &amp; PDE solving</li>
+          <li>Constraint-aware calibration (e.g., SLV, XVA)</li>
+          <li>Stochastic process recovery and inverse problems</li>
+          <li>Safe output spaces (positivity, probability, arbitrage-free)</li>
+        </ul>
+
+        <h3>Live Demos</h3>
+        <p>
+          Explore public demos built on Neutryx Core.
+          <br />
+          <a href="/demos" class="underline">View demonstrations</a>
+        </p>
+
+        <h3>Technology</h3>
+        <ul>
+          <li>JAX (JIT/AAD, pmap/pjit)</li>
+          <li>Bilevel adaptive Lagrangian optimisation</li>
+          <li>Meta-gradient constraint control</li>
+        </ul>
+
+        <h3>IP &amp; Partnerships</h3>
+        <p>
+          The Neutryx AI Engine is the focus of an <strong>UCLB invention disclosure</strong>.
+          We welcome R&amp;D collaborations and licensing discussions.
+          <br />
+          <a href="mailto:contact@neutryx.tech" class="underline">contact@neutryx.tech</a>
+        </p>
+      </aside>
+    </div>
+
+    <figure class="max-w-4xl mx-auto mt-12">
+      <img src="/assets/figures/neutryx_dual_layer.svg" alt="Neutryx Dual-Layer Architecture: Proprietary Engine above Public Core with bidirectional constraint-coupled optimisation." />
+      <figcaption class="mt-3 text-sm text-neutral-400">
+        Architecture of the Neutryx Dual-Layer AI System (Public Core vs. Proprietary AI Engine).
+      </figcaption>
+    </figure>
+  </section>
 
   <footer>© 2025 Neutryx Lab · University College London</footer>
 </body>
