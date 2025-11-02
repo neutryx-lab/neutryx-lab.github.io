@@ -635,6 +635,11 @@
             <button id="btnRun" class="btn primary" type="button">Run computation</button>
             <button id="btnSample" class="btn ghost" type="button">Sample params</button>
           </div>
+
+          <!-- XVA-specific Monte Carlo button -->
+          <div id="xva-mc-button-container" class="action-buttons" style="display:none;margin-top:12px">
+            <button id="btnXVAMC" class="btn primary" type="button" style="background:var(--acc)">Advanced XVA (Monte Carlo)</button>
+          </div>
         </div>
 
         <div class="section small mutetext">
@@ -790,6 +795,12 @@
       // Clear errors when switching tabs
       clearAllErrors();
       setStatus('muted', 'idle');
+
+      // Show/hide XVA MC button
+      const xvaMCContainer = $('#xva-mc-button-container');
+      if(xvaMCContainer){
+        xvaMCContainer.style.display = (tabName === 'xva') ? 'flex' : 'none';
+      }
     }
 
     // Add tab click listeners
@@ -1581,6 +1592,127 @@
       }
     }
 
+    // Run XVA Monte Carlo calculation
+    async function runXVAMC(){
+      // Validate inputs before running
+      if(!validateAllFields()){
+        setStatus('err', 'Invalid inputs');
+        return;
+      }
+
+      const base = API_BASE_URL;
+      const endpoint = 'swap/xva_risks';
+
+      // Build XVA swap request
+      const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, xvaPayType, false);
+      const xvaTenors = ['3M', '6M', '1Y', '2Y', '5Y', '10Y'];
+      xvaSwap.curve = buildCurve(xvaFields, xvaTenors);
+
+      const requestBody = {
+        swap: xvaSwap,
+        xva: {
+          lgd_cp: pctToDecimal(xvaFields.lgdCp.value),
+          lgd_own: pctToDecimal(xvaFields.lgdOwn.value),
+          hazard_cp_curve: {
+            '1Y': pctToDecimal(xvaFields.hazCp1y.value),
+            '5Y': pctToDecimal(xvaFields.hazCp5y.value),
+            '10Y': pctToDecimal(xvaFields.hazCp10y.value)
+          },
+          hazard_own_curve: {
+            '1Y': pctToDecimal(xvaFields.hazOwn1y.value),
+            '5Y': pctToDecimal(xvaFields.hazOwn5y.value),
+            '10Y': pctToDecimal(xvaFields.hazOwn10y.value)
+          },
+          funding_spread: pctToDecimal(xvaFields.funding.value),
+          cost_of_capital: pctToDecimal(xvaFields.coc.value),
+          capital_factor: pctToDecimal(xvaFields.capFactor.value),
+          grid_months: 3,  // Fixed value
+          normal_vol: 0.005,  // Fixed volatility parameter for MC
+          n_paths: 200  // Fixed number of Monte Carlo paths
+        }
+      };
+
+      setStatus('warn','running MC…');
+      setLoading(true);
+
+      try{
+        const url = `${base}/${endpoint}`;
+
+        reqbox.textContent = JSON.stringify(requestBody, null, 2);
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(requestBody)
+        });
+
+        const txt = await res.text();
+
+        try{
+          const raw = JSON.parse(txt);
+
+          // DEBUG: Log raw API response structure
+          console.log('=== Raw XVA MC Response ===');
+          console.log('Response keys:', Object.keys(raw));
+          console.log('Full response:', raw);
+          console.log('========================');
+
+          // Extract results from API response (same structure as XVA)
+          const extractResult = (data) => {
+            if (!data) return null;
+            const result = data.result || data;
+            if (data.time_sec !== undefined) {
+              result.latency_ms = data.time_sec * 1000;
+            }
+            return result;
+          };
+
+          const engineMap = [
+            { key: 'baseline', name: 'Baseline', data: raw.baseline },
+            { key: 'JIT', name: 'JIT', data: raw.JIT },
+            { key: 'AAD_JIT', name: 'AAD+JIT', data: raw.AAD_JIT }
+          ];
+
+          const results = engineMap
+            .filter(e => e.data != null)
+            .map(e => {
+              const result = extractResult(e.data);
+              result.engineName = e.name;
+              return result;
+            });
+
+          out.textContent = JSON.stringify(raw, null, 2);
+          out.parentElement.classList.add('fade-in');
+
+          if(res.ok){
+            // Display parsed comparison results as array
+            displayParsedResults(results);
+            setStatus('ok', 'MC success');
+          } else {
+            setStatus('err', `HTTP ${res.status} error`);
+            displayParsedResults(null);
+          }
+        }
+        catch{
+          out.textContent = txt;
+          setStatus('err', 'Parse error');
+          displayParsedResults(null);
+        }
+      }catch(e){
+        let errorMsg = 'Network request failed. ';
+        if(e.message.includes('Failed to fetch')){
+          errorMsg += 'Check your internet connection or API URL.';
+        } else {
+          errorMsg += e.message;
+        }
+        out.textContent = errorMsg;
+        setStatus('err','Network error');
+        displayParsedResults(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     // Test API connection (silent, no popup)
     async function testConnection(){
       setStatus('warn', 'connecting…');
@@ -1601,6 +1733,11 @@
 
     btnRun.addEventListener('click', run);
     btnSample.addEventListener('click', sample);
+
+    const btnXVAMC = $('#btnXVAMC');
+    if(btnXVAMC){
+      btnXVAMC.addEventListener('click', runXVAMC);
+    }
 
     // Initialize endpoint display
     switchTab('pv');
