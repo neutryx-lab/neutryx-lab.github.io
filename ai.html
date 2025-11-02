@@ -3,10 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neutryx AI Engine</title>
-  <meta name="description" content="A constraint-aware neural universal approximator — a foundation for model-free numerical reasoning.">
+
+  <!-- Primary Meta Tags -->
+  <title>Neutryx AI Engine - Constraint-Aware Neural Universal Approximator</title>
+  <meta name="title" content="Neutryx AI Engine - Constraint-Aware Neural Universal Approximator" />
+  <meta name="description" content="A constraint-aware neural universal approximator for model-free numerical reasoning. Bilevel adaptive Lagrangian optimization with meta-gradient control for mathematical, physical, and probabilistic consistency." />
+  <meta name="keywords" content="neural networks, constraint optimization, universal approximator, Lagrangian optimization, JAX, machine learning, model-free numerical reasoning, calibration, inverse problems" />
+  <meta name="author" content="Neutryx Lab - University College London" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://neutryx-lab.github.io/ai.html" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://neutryx-lab.github.io/ai.html" />
+  <meta property="og:title" content="Neutryx AI Engine - Constraint-Aware Neural Universal Approximator" />
+  <meta property="og:description" content="Domain-agnostic neural computation engine with bilevel adaptive Lagrangian optimization for constraint-aware numerical reasoning." />
+  <meta property="og:image" content="https://neutryx-lab.github.io/assets/logo.png" />
+  <meta property="og:site_name" content="Neutryx Lab" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://neutryx-lab.github.io/ai.html" />
+  <meta property="twitter:title" content="Neutryx AI Engine - Constraint-Aware Neural Universal Approximator" />
+  <meta property="twitter:description" content="Domain-agnostic neural computation engine with bilevel adaptive Lagrangian optimization for constraint-aware numerical reasoning." />
+  <meta property="twitter:image" content="https://neutryx-lab.github.io/assets/logo.png" />
+
+  <!-- Performance Optimization -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+  <link rel="dns-prefetch" href="https://unpkg.com" />
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
   <style>
   :root { --fg:#e5e5e5; --bg:#0f0f0f; --card:#1a1a1a; --pri:#60a5fa; --border:#2a2a2a; }
   [data-theme="light"] { --fg:#111; --bg:#f9f9fb; --card:#fff; --pri:#0a66c2; --border:#d9d9e3; }
@@ -132,38 +162,6 @@
 
   <footer>© 2025 Neutryx Lab · University College London</footer>
 
-  <script>
-    function initTheme(){
-      const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = saved || (prefersDark ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', theme);
-      updateThemeIcon(theme);
-    }
-
-    function updateThemeIcon(theme){
-      const lightIcon = document.querySelector('.theme-icon-light');
-      const darkIcon = document.querySelector('.theme-icon-dark');
-      if(theme === 'dark'){
-        lightIcon.style.display = 'none';
-        darkIcon.style.display = 'block';
-      } else {
-        lightIcon.style.display = 'block';
-        darkIcon.style.display = 'none';
-      }
-    }
-
-    function toggleTheme(){
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      const next = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      updateThemeIcon(next);
-    }
-
-    initTheme();
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    if(typeof lucide !== 'undefined') lucide.createIcons();
-  </script>
+  <script src="assets/theme.min.js" defer></script>
 </body>
 </html>

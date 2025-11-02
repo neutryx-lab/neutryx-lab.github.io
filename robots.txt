@@ -1,0 +1,21 @@
+# robots.txt for Neutryx Lab
+# https://neutryx-lab.github.io/
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://neutryx-lab.github.io/sitemap.xml
+
+# Disallow assets that don't need to be indexed
+Disallow: /assets/*.min.js
+Disallow: /assets/*.min.css
+
+# Allow main pages
+Allow: /index.html
+Allow: /core.html
+Allow: /ai.html
+Allow: /about.html
+
+# Crawl delay (optional, adjust if needed)
+Crawl-delay: 1
