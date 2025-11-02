@@ -1262,12 +1262,9 @@
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
         const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, false);
-        xvaSwap.curve = {
-          '1M': pctToDecimal(xvaFields.curve1m.value),
-          '1Y': pctToDecimal(xvaFields.curve1y.value),
-          '5Y': pctToDecimal(xvaFields.curve5y.value),
-          '10Y': pctToDecimal(xvaFields.curve10y.value)
-        };
+        // Build XVA curve using buildCurve for consistency
+        const xvaTenors = ['1M', '1Y', '5Y', '10Y'];
+        xvaSwap.curve = buildCurve(xvaFields, xvaTenors);
 
         baseRequestBody = {
           swap: xvaSwap,
