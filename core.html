@@ -626,7 +626,7 @@
           • Risk: <code>/swap/risks</code> — DV01 and bucketed sensitivities<br>
           • XVA: <code>/swap/xva</code> — CVA, DVA, FVA, and KVA calculations<br>
           <br>
-          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. All computations run across 4 engine configurations to compare performance.
+          <strong>Tips:</strong> Use <span class="kbd">Ctrl+Enter</span> to run, <span class="kbd">Esc</span> to clear errors. All computations run across 3 engine configurations (Baseline, JIT, AAD+JIT) to compare performance.
         </div>
       </div>
 
@@ -1321,11 +1321,11 @@
           };
 
           // Build results array with engine names
+          // API now returns: baseline (JAX noJIT), JIT, AAD_JIT
           const engineMap = [
             { key: 'baseline', name: 'Baseline', data: raw.baseline },
-            { key: 'jax_nojit', name: 'JAX (noJIT)', data: raw.jax_nojit },
-            { key: 'jax_jit', name: 'JAX (JIT)', data: raw.jax_jit },
-            { key: 'jax_jit_aad', name: 'JAX (JIT+AAD)', data: raw.jax_jit_aad }
+            { key: 'JIT', name: 'JIT', data: raw.JIT },
+            { key: 'AAD_JIT', name: 'AAD+JIT', data: raw.AAD_JIT }
           ];
 
           const results = engineMap
