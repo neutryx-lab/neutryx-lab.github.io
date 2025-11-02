@@ -1066,9 +1066,18 @@
       const baseline = Array.isArray(data) ? data[0] : data;
       const engines = Array.isArray(data) ? data : [data];
 
+      // DEBUG: Log the baseline structure to see what fields are available
+      console.log('=== Risk Results Debug ===');
+      console.log('Baseline object:', baseline);
+      console.log('Available keys:', Object.keys(baseline));
+
       // Extract DV01 and bucketed risks
       const dv01 = baseline.dv01 || baseline.total_dv01 || 0;
       const bucketedRisks = baseline.bucketed_dv01 || baseline.bucketed_risks || baseline.risks || {};
+
+      console.log('Extracted dv01:', dv01);
+      console.log('Extracted bucketedRisks:', bucketedRisks);
+      console.log('========================');
 
       let html = `
         <div class="field" style="margin-bottom:12px">
