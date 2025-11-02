@@ -253,11 +253,11 @@
               <div class="col-section">
                 <div class="section-header">Swap Details</div>
                 <div class="field" id="field-pv-type" style="margin-bottom:12px">
-                  <label for="pv-type">Type</label>
-                  <select id="pv-type">
-                    <option value="true">Pay Fixed</option>
-                    <option value="false">Receive Fixed</option>
-                  </select>
+                  <label>Type</label>
+                  <div class="freq-toggle" id="pv-type-toggle">
+                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
+                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
+                  </div>
                 </div>
                 <div class="field" id="field-pv-notional" style="margin-bottom:12px">
                   <label for="pv-notional">Notional</label>
@@ -345,11 +345,11 @@
               <div class="col-section">
                 <div class="section-header">Swap Details</div>
                 <div class="field" id="field-risk-type" style="margin-bottom:12px">
-                  <label for="risk-type">Type</label>
-                  <select id="risk-type">
-                    <option value="true">Pay Fixed</option>
-                    <option value="false">Receive Fixed</option>
-                  </select>
+                  <label>Type</label>
+                  <div class="freq-toggle" id="risk-type-toggle">
+                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
+                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
+                  </div>
                 </div>
                 <div class="field" id="field-risk-notional" style="margin-bottom:12px">
                   <label for="risk-notional">Notional</label>
@@ -437,11 +437,11 @@
               <div class="col-section">
                 <div class="section-header">Swap Details</div>
                 <div class="field" id="field-xva-type" style="margin-bottom:12px">
-                  <label for="xva-type">Type</label>
-                  <select id="xva-type">
-                    <option value="true">Pay Fixed</option>
-                    <option value="false">Receive Fixed</option>
-                  </select>
+                  <label>Type</label>
+                  <div class="freq-toggle" id="xva-type-toggle">
+                    <button type="button" class="freq-option active" data-type="true">Pay Fixed</button>
+                    <button type="button" class="freq-option" data-type="false">Receive Fixed</button>
+                  </div>
                 </div>
                 <div class="field" id="field-xva-notional" style="margin-bottom:12px">
                   <label for="xva-notional">Notional</label>
@@ -699,9 +699,13 @@
     let riskPayFreq = 6;
     let xvaPayFreq = 6;
 
+    // Pay type values (for all tabs) - 'true' = Pay Fixed, 'false' = Receive Fixed
+    let pvPayType = 'true';
+    let riskPayType = 'true';
+    let xvaPayType = 'true';
+
     // Field references by tab
     const pvFields = {
-      type: $('#pv-type'),
       notional: $('#pv-notional'),
       fixedRate: $('#pv-fixed-rate'),
       maturity: $('#pv-maturity'),
@@ -714,7 +718,6 @@
     };
 
     const riskFields = {
-      type: $('#risk-type'),
       notional: $('#risk-notional'),
       fixedRate: $('#risk-fixed-rate'),
       maturity: $('#risk-maturity'),
@@ -727,7 +730,6 @@
     };
 
     const xvaFields = {
-      type: $('#xva-type'),
       notional: $('#xva-notional'),
       fixedRate: $('#xva-fixed-rate'),
       maturity: $('#xva-maturity'),
@@ -797,7 +799,7 @@
       });
     });
 
-    // Add frequency toggle listeners
+    // Add frequency and type toggle listeners
     $$('.freq-toggle').forEach(toggle => {
       const buttons = toggle.querySelectorAll('.freq-option');
       const tabId = toggle.closest('.tab-content')?.id;
@@ -809,12 +811,23 @@
           // Add active to clicked button
           btn.classList.add('active');
 
-          // Update the corresponding frequency variable
+          // Update the corresponding variable (frequency or type)
           if(tabId){
-            const freq = parseInt(btn.getAttribute('data-freq'));
-            if(tabId === 'pv-content') pvPayFreq = freq;
-            else if(tabId === 'risk-content') riskPayFreq = freq;
-            else if(tabId === 'xva-content') xvaPayFreq = freq;
+            const freq = btn.getAttribute('data-freq');
+            const type = btn.getAttribute('data-type');
+
+            if(freq){
+              // Pay frequency toggle
+              const freqValue = parseInt(freq);
+              if(tabId === 'pv-content') pvPayFreq = freqValue;
+              else if(tabId === 'risk-content') riskPayFreq = freqValue;
+              else if(tabId === 'xva-content') xvaPayFreq = freqValue;
+            } else if(type){
+              // Type toggle (Pay Fixed / Receive Fixed)
+              if(tabId === 'pv-content') pvPayType = type;
+              else if(tabId === 'risk-content') riskPayType = type;
+              else if(tabId === 'xva-content') xvaPayType = type;
+            }
           }
         });
       });
@@ -973,13 +986,13 @@
     }
 
     // Build swap request object
-    function buildSwapRequest(fields, payFreqMonths, includeCurve = true){
+    function buildSwapRequest(fields, payFreqMonths, payType, includeCurve = true){
       const swap = {
         notional: parseNotional(fields.notional.value),
         fixed_rate: pctToDecimal(fields.fixedRate.value),
         maturity_years: parseFloat(fields.maturity.value),
         pay_freq_months: payFreqMonths,
-        pay_fixed: fields.type ? fields.type.value === 'true' : true
+        pay_fixed: payType === 'true'
       };
 
       if(includeCurve){
@@ -1297,16 +1310,16 @@
       if(activeTab === 'pv'){
         endpoint = 'swap/price';
         baseRequestBody = {
-          swap: buildSwapRequest(pvFields, pvPayFreq, true)
+          swap: buildSwapRequest(pvFields, pvPayFreq, pvPayType, true)
         };
       } else if(activeTab === 'risk'){
         endpoint = 'swap/risks';
         baseRequestBody = {
-          swap: buildSwapRequest(riskFields, riskPayFreq, true)
+          swap: buildSwapRequest(riskFields, riskPayFreq, riskPayType, true)
         };
       } else if(activeTab === 'xva'){
         endpoint = 'swap/xva';
-        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, false);
+        const xvaSwap = buildSwapRequest(xvaFields, xvaPayFreq, xvaPayType, false);
         // Build XVA curve using buildCurve for consistency (same 6 tenors as PV/Risk)
         const xvaTenors = ['3M', '6M', '1Y', '2Y', '5Y', '10Y'];
         xvaSwap.curve = buildCurve(xvaFields, xvaTenors);
