@@ -1384,6 +1384,106 @@
         `;
       }
 
+      // Add sensitivities section if available (from xva_risks endpoint)
+      if(baseline.sensitivities){
+        const sens = baseline.sensitivities;
+        html += `
+          <div class="field" style="margin-bottom:16px">
+            <label>Risk Sensitivities (AAD)</label>
+            <div style="margin-top:12px;background:#f8f9fa;padding:16px;border-radius:8px;border:1px solid var(--border)">
+        `;
+
+        // CVA Delta - Curve
+        if(sens.cva_delta && sens.cva_delta.curve){
+          html += `<div style="margin-bottom:16px">
+            <div class="small mutetext" style="margin-bottom:8px">CVA Delta (Interest Rate Curve):</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
+
+          Object.entries(sens.cva_delta.curve).forEach(([tenor, value]) => {
+            if(value !== 0){
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+              </div>`;
+            }
+          });
+
+          html += `</div></div>`;
+        }
+
+        // CVA Delta - Hazard Rates
+        if(sens.cva_delta && (sens.cva_delta.hazard_cp || sens.cva_delta.hazard_own)){
+          html += `<div style="margin-bottom:16px">
+            <div class="small mutetext" style="margin-bottom:8px">CVA Delta (Hazard Rates):</div>`;
+
+          if(sens.cva_delta.hazard_cp){
+            html += `<div style="margin-bottom:8px">
+              <div style="font-size:0.85em;color:var(--muted);margin-bottom:4px">Counterparty:</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
+
+            Object.entries(sens.cva_delta.hazard_cp).forEach(([tenor, value]) => {
+              if(value !== 0){
+                html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                  <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                  <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+                </div>`;
+              }
+            });
+
+            html += `</div></div>`;
+          }
+
+          if(sens.cva_delta.hazard_own){
+            html += `<div>
+              <div style="font-size:0.85em;color:var(--muted);margin-bottom:4px">Own:</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
+
+            Object.entries(sens.cva_delta.hazard_own).forEach(([tenor, value]) => {
+              if(value !== 0){
+                html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                  <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                  <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+                </div>`;
+              }
+            });
+
+            html += `</div></div>`;
+          }
+
+          html += `</div>`;
+        }
+
+        // CVA Vega
+        if(sens.cva_vega !== undefined){
+          html += `<div style="margin-bottom:16px">
+            <div class="small mutetext" style="margin-bottom:8px">CVA Vega:</div>
+            <div style="padding:8px 12px;background:#fff;border-radius:6px;display:inline-block">
+              <span style="font-size:1em;font-weight:500;font-family:monospace">${formatNotional(Math.round(sens.cva_vega))}</span>
+            </div>
+          </div>`;
+        }
+
+        // Total Delta - Curve
+        if(sens.total_delta && sens.total_delta.curve){
+          html += `<div style="margin-bottom:8px">
+            <div class="small mutetext" style="margin-bottom:8px">Total XVA Delta (Interest Rate Curve):</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
+
+          Object.entries(sens.total_delta.curve).forEach(([tenor, value]) => {
+            if(value !== 0){
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+              </div>`;
+            }
+          });
+
+          html += `</div></div>`;
+        }
+
+        html += `</div></div>`;
+      }
+
       // Display computation times for all engines
       if(Array.isArray(data) && data.length > 1){
         html += '<div class="field" style="margin-bottom:8px"><label>Computation Time</label>';
