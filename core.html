@@ -1142,6 +1142,16 @@
       const baseline = Array.isArray(data) ? data[0] : data;
       const engines = Array.isArray(data) ? data : [data];
 
+      // DEBUG: Log the baseline structure to see what fields are available
+      console.log('=== XVA Results Debug ===');
+      console.log('Baseline object:', baseline);
+      console.log('Available keys:', Object.keys(baseline));
+      console.log('CVA:', baseline.cva);
+      console.log('DVA:', baseline.dva);
+      console.log('FVA:', baseline.fva);
+      console.log('KVA:', baseline.kva);
+      console.log('========================');
+
       let html = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="field">
@@ -1317,6 +1327,13 @@
 
         try{
           const raw = JSON.parse(txt);
+
+          // DEBUG: Log raw API response structure
+          console.log('=== Raw API Response ===');
+          console.log('Endpoint:', endpoint);
+          console.log('Response keys:', Object.keys(raw));
+          console.log('Full response:', raw);
+          console.log('========================');
 
           // Extract results from API response
           // API returns: {baseline: {...}, jax_nojit: {...}, jax_jit: {...}, ...}
