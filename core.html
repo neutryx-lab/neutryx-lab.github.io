@@ -1400,12 +1400,10 @@
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
           Object.entries(sens.cva_delta.curve).forEach(([tenor, value]) => {
-            if(value !== 0){
-              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
-                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
-                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
-              </div>`;
-            }
+            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+              <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+              <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+            </div>`;
           });
 
           html += `</div></div>`;
@@ -1422,12 +1420,10 @@
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
             Object.entries(sens.cva_delta.hazard_cp).forEach(([tenor, value]) => {
-              if(value !== 0){
-                html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
-                  <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
-                  <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
-                </div>`;
-              }
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+              </div>`;
             });
 
             html += `</div></div>`;
@@ -1439,12 +1435,10 @@
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
             Object.entries(sens.cva_delta.hazard_own).forEach(([tenor, value]) => {
-              if(value !== 0){
-                html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
-                  <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
-                  <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
-                </div>`;
-              }
+              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+              </div>`;
             });
 
             html += `</div></div>`;
@@ -1470,12 +1464,10 @@
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">`;
 
           Object.entries(sens.total_delta.curve).forEach(([tenor, value]) => {
-            if(value !== 0){
-              html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
-                <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
-                <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
-              </div>`;
-            }
+            html += `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#fff;border-radius:6px">
+              <span style="font-size:0.9em;font-weight:500">${tenor}:</span>
+              <span style="font-size:0.9em;font-family:monospace">${formatNotional(Math.round(value))}</span>
+            </div>`;
           });
 
           html += `</div></div>`;
