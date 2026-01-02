@@ -9,12 +9,14 @@ const CONFIG = {
    * - localhost: http://localhost:8000 (for local development)
    * - production: https://neutryx-api.onrender.com
    */
+  /* Modified logic for Vercel Rewrites */
   API_BASE_URL: (function() {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:8000';
-    }
-    return 'https://neutryx-api.onrender.com';
+     // Local development
+     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+       return 'http://localhost:8000';
+     }
+     // Production (proxied via Vercel)
+     return '/api'; 
   })(),
 
   /**
